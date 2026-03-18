@@ -2,31 +2,42 @@ import subprocess
 import os
 import argparse
 import sys
+import json
 
-# Configuration for the different NeoPixel panels
-PANEL_CONFIGS = {
-    "16x16": {
-        "led_pitch": 10,
-        "rows": 16,
-        "cols": 16,
-        "type": "matrix"
-    },
-    "8x32": {
-        "led_pitch": 10,
-        "rows": 8,
-        "cols": 32,
-        "type": "matrix"
-    },
-    "ring_20": {
-        "led_pitch": 10,
-        "num_leds": 20,
-        "outer_diameter": 62,
-        "inner_diameter": 47,
-        "type": "ring"
-    }
-}
+CONFIG_FILE = "configs/panels.json"
+
+def load_configs(config_path):
+    if not os.path.exists(config_path):
+        print(f"Error: Configuration file {config_path} not found.")
+        sys.exit(1)
+
+    try:
+        with open(config_path, 'r') as f:
+            return json.load(f)
+    except json.JSONDecodeError as e:
+        print(f"Error: Failed to parse JSON configuration: {e}")
+        sys.exit(1)
+
+def validate_config(name, config):
+    required_fields = ["type"]
+    if config.get("type") == "matrix":
+        required_fields.extend(["rows", "cols", "led_pitch"])
+    elif config.get("type") == "ring":
+        required_fields.extend(["num_leds", "outer_diameter", "inner_diameter"])
+    else:
+        print(f"Error: Invalid or missing 'type' in config for {name}")
+        return False
+
+    for field in required_fields:
+        if field not in config:
+            print(f"Error: Missing required field '{field}' in config for {name}")
+            return False
+    return True
 
 def generate_output(panel_name, config, output_dir="stl", image_dir="images", generate_png=True):
+    if not validate_config(panel_name, config):
+        raise ValueError(f"Invalid configuration for {panel_name}")
+
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     if generate_png and not os.path.exists(image_dir):
@@ -73,16 +84,19 @@ def generate_output(panel_name, config, output_dir="stl", image_dir="images", ge
         raise
 
 if __name__ == "__main__":
+    configs = load_configs(CONFIG_FILE)
+
     parser = argparse.ArgumentParser(description="Generate NeoPixel Diffuser STLs and PNGs")
-    parser.add_argument("--panel", choices=list(PANEL_CONFIGS.keys()) + ["all"], default="all", help="Panel to generate files for")
+    parser.add_argument("--panel", choices=list(configs.keys()) + ["all"], default="all", help="Panel to generate files for")
     parser.add_argument("--no-png", action="store_true", help="Skip PNG generation")
     args = parser.parse_args()
 
     try:
         if args.panel == "all":
-            for name, cfg in PANEL_CONFIGS.items():
+            for name, cfg in configs.items():
                 generate_output(name, cfg, generate_png=not args.no_png)
         else:
-            generate_output(args.panel, PANEL_CONFIGS[args.panel], generate_png=not args.no_png)
+            generate_output(args.panel, configs[args.panel], generate_png=not args.no_png)
     except Exception as e:
+        print(f"Execution failed: {e}")
         sys.exit(1)
