@@ -1,0 +1,21 @@
+{
+    "16x16": {
+        "led_pitch": 10,
+        "rows": 16,
+        "cols": 16,
+        "type": "matrix"
+    },
+    "8x32": {
+        "led_pitch": 10,
+        "rows": 8,
+        "cols": 32,
+        "type": "matrix"
+    },
+    "ring_20": {
+        "led_pitch": 10,
+        "num_leds": 20,
+        "outer_diameter": 62,
+        "inner_diameter": 47,
+        "type": "ring"
+    }
+}

@@ -9,6 +9,10 @@ diffusion_height = 10;    // Distance from LED to diffuser top (mm)
 bottom_thickness = 0.4;   // Optional thin diffusion layer at the top (mm)
 cell_shape = "square";    // "square" or "circular"
 
+// Stability frame
+frame_enabled = false;    // Add a reinforced outer frame
+frame_width = 2.0;        // Thickness of the outer frame (mm)
+
 // Matrix specific
 rows = 16;
 cols = 16;
@@ -37,6 +41,21 @@ module cell() {
 }
 
 module matrix_layout() {
+    total_width = cols * led_pitch;
+    total_height = rows * led_pitch;
+
+    // Optional frame
+    if (frame_enabled) {
+        translate([-led_pitch/2, -led_pitch/2, 0])
+        difference() {
+            translate([-frame_width, -frame_width, 0])
+            cube([total_width + 2*frame_width, total_height + 2*frame_width, diffusion_height]);
+
+            translate([0, 0, -1])
+            cube([total_width, total_height, diffusion_height + 2]);
+        }
+    }
+
     for (r = [0 : rows - 1]) {
         for (c = [0 : cols - 1]) {
             translate([c * led_pitch, r * led_pitch, diffusion_height/2])
@@ -48,10 +67,11 @@ module matrix_layout() {
 module ring_layout() {
     radius = (outer_diameter + inner_diameter) / 4;
     ring_width = (outer_diameter - inner_diameter) / 2;
+    actual_outer = frame_enabled ? outer_diameter + 2*frame_width : outer_diameter;
 
     difference() {
         // Ring body
-        cylinder(d=outer_diameter, h=diffusion_height, $fn=128);
+        cylinder(d=actual_outer, h=diffusion_height, $fn=128);
         translate([0, 0, -1])
         cylinder(d=inner_diameter, h=diffusion_height + 2, $fn=128);
 
