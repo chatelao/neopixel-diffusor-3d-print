@@ -1,28 +1,81 @@
 // Parametric NeoPixel Diffuser Generator
-// Steps 3-7: Setup, Pitch, Wall Thickness, Diffusion Height, Single Cell Module
 
 // --- Global Parameters ---
+type = "matrix";          // "matrix" or "ring"
 led_pitch = 10;           // Center-to-center distance between LEDs (mm)
 wall_thickness = 0.8;     // Width of the dividing walls (mm)
 diffusion_height = 10;    // Distance from LED to diffuser top (mm)
 bottom_thickness = 0.4;   // Optional thin diffusion layer at the top (mm)
+cell_shape = "square";    // "square" or "circular"
+
+// Matrix specific
+rows = 16;
+cols = 16;
+
+// Ring specific
+num_leds = 20;
+outer_diameter = 62;
+inner_diameter = 47;
 
 // --- Modules ---
 
-// Module for a single square diffuser cell (Step 7)
-module single_cell() {
+// Module for a single diffuser cell
+module cell() {
     difference() {
         // Outer boundary of the cell
-        cube([led_pitch, led_pitch, diffusion_height]);
+        cube([led_pitch, led_pitch, diffusion_height], center=true);
 
         // Inner cavity (hollow part)
-        // Shifted to maintain wall thickness on all sides
-        translate([wall_thickness/2, wall_thickness/2, -1])
-        cube([led_pitch - wall_thickness, led_pitch - wall_thickness, diffusion_height - bottom_thickness + 1]);
+        translate([0, 0, bottom_thickness/2])
+        if (cell_shape == "circular") {
+            cylinder(d=led_pitch - wall_thickness, h=diffusion_height - bottom_thickness + 0.1, center=true, $fn=64);
+        } else {
+            cube([led_pitch - wall_thickness, led_pitch - wall_thickness, diffusion_height - bottom_thickness + 0.1], center=true);
+        }
     }
 }
 
-// --- Render Logic (added to support automated generation) ---
-// By default, we render a single cell as per step 7.
-// In future steps, this will be expanded to support matrix and ring layouts.
-single_cell();
+module matrix_layout() {
+    for (r = [0 : rows - 1]) {
+        for (c = [0 : cols - 1]) {
+            translate([c * led_pitch, r * led_pitch, diffusion_height/2])
+            cell();
+        }
+    }
+}
+
+module ring_layout() {
+    radius = (outer_diameter + inner_diameter) / 4;
+    ring_width = (outer_diameter - inner_diameter) / 2;
+
+    difference() {
+        // Ring body
+        cylinder(d=outer_diameter, h=diffusion_height, $fn=128);
+        translate([0, 0, -1])
+        cylinder(d=inner_diameter, h=diffusion_height + 2, $fn=128);
+
+        // Subtract cavities
+        for (i = [0 : num_leds - 1]) {
+            angle = i * 360 / num_leds;
+            rotate([0, 0, angle])
+            translate([radius, 0, bottom_thickness + (diffusion_height - bottom_thickness)/2])
+            if (cell_shape == "circular") {
+                cylinder(d=led_pitch - wall_thickness, h=diffusion_height - bottom_thickness + 0.1, center=true, $fn=64);
+            } else {
+                // For square cells in a ring, we rotate them to align with the radius
+                // Width is radial, height is tangential (arc-like)
+                cube([ring_width - wall_thickness, (3.14159 * (outer_diameter+inner_diameter)/2 / num_leds) - wall_thickness, diffusion_height - bottom_thickness + 0.1], center=true);
+            }
+        }
+    }
+}
+
+// --- Render Logic ---
+if (type == "matrix") {
+    matrix_layout();
+} else if (type == "ring") {
+    ring_layout();
+} else {
+    // Fallback to single cell
+    translate([0, 0, diffusion_height/2]) cell();
+}
