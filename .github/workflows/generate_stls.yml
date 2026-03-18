@@ -1,0 +1,35 @@
+name: Generate STLs
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install OpenSCAD
+      run: |
+        sudo add-apt-repository ppa:openscad/releases -y
+        sudo apt-get update
+        sudo apt-get install openscad -y
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Generate STLs
+      run: python scripts/generate_stl.py
+
+    - name: Upload STLs
+      uses: actions/upload-artifact@v4
+      with:
+        name: stl-files
+        path: stl/*.stl
