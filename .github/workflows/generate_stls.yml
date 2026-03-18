@@ -16,7 +16,6 @@ jobs:
 
     - name: Install OpenSCAD
       run: |
-        sudo add-apt-repository ppa:openscad/releases -y
         sudo apt-get update
         sudo apt-get install openscad -y
 
