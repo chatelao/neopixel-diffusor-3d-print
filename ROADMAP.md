@@ -15,11 +15,11 @@ Diese Roadmap beschreibt die 30 Schritte zur Umsetzung eines parametrierbaren Ge
 - [x] 5. **Parameter für Wandstärke:** Festlegung der minimalen Druckbreite für die Trennwände (z.B. 0.8mm oder 1.2mm).
 - [x] 6. **Definition der Diffusionshöhe:** Variable für den Abstand zwischen LED und Diffusor-Oberfläche zur Lichtmischung.
 - [x] 7. **Modellierung einer Einzelzelle:** Erstellung eines Moduls für eine quadratische Kammer.
-- [ ] 8. **Parametrisierung der Zellform:** Unterstützung für quadratische und kreisförmige Diffusor-Ausschnitte.
-- [ ] 9. **Implementierung des Matrix-Generators:** Erstellung einer Doppelschleife zur Anordnung der Zellen in X- und Y-Richtung.
-- [ ] 10. **Toleranz-Management:** Einführung eines Offsets für die Passgenauigkeit auf den Panels.
-- [ ] 11. **Entwicklung der 16x16 Konfiguration:** Vordefinierter Parametersatz für das 16x16 Panel.
-- [ ] 12. **Entwicklung der 8x32 Konfiguration:** Vordefinierter Parametersatz für das 8x32 Panel.
+- [x] 8. **Parametrisierung der Zellform:** Unterstützung für quadratische und kreisförmige Diffusor-Ausschnitte.
+- [x] 9. **Implementierung des Matrix-Generators:** Erstellung einer Doppelschleife zur Anordnung der Zellen in X- und Y-Richtung.
+- [x] 10. **Toleranz-Management:** Einführung eines Offsets für die Passgenauigkeit auf den Panels.
+- [x] 11. **Entwicklung der 16x16 Konfiguration:** Vordefinierter Parametersatz für das 16x16 Panel.
+- [x] 12. **Entwicklung der 8x32 Konfiguration:** Vordefinierter Parametersatz für das 8x32 Panel.
 - [ ] 13. **Mathematik für den Ring-Diffusor:** Berechnung der Positionen basierend auf dem Radius und dem Winkel (360/20 Grad).
 - [ ] 14. **Implementierung des Ring-Moduls:** Polare Anordnung der Diffusor-Kammern für den 20-LED Ring.
 - [ ] 15. **Hohlraum-Design:** Optimierung der Kammern zur Reduzierung von Lichtlecks zwischen benachbarten LEDs.
