@@ -3,6 +3,7 @@
 // --- Global Parameters ---
 type = "matrix";          // "matrix" or "ring"
 led_pitch = 10;           // Center-to-center distance between LEDs (mm)
+tolerance = 0.1;          // Offset for fit (mm)
 wall_thickness = 0.8;     // Width of the dividing walls (mm)
 diffusion_height = 10;    // Distance from LED to diffuser top (mm)
 bottom_thickness = 0.4;   // Optional thin diffusion layer at the top (mm)
@@ -28,9 +29,9 @@ module cell() {
         // Inner cavity (hollow part)
         translate([0, 0, bottom_thickness/2])
         if (cell_shape == "circular") {
-            cylinder(d=led_pitch - wall_thickness, h=diffusion_height - bottom_thickness + 0.1, center=true, $fn=64);
+            cylinder(d=led_pitch - wall_thickness + tolerance, h=diffusion_height - bottom_thickness + 0.1, center=true, $fn=64);
         } else {
-            cube([led_pitch - wall_thickness, led_pitch - wall_thickness, diffusion_height - bottom_thickness + 0.1], center=true);
+            cube([led_pitch - wall_thickness + tolerance, led_pitch - wall_thickness + tolerance, diffusion_height - bottom_thickness + 0.1], center=true);
         }
     }
 }
@@ -60,11 +61,11 @@ module ring_layout() {
             rotate([0, 0, angle])
             translate([radius, 0, bottom_thickness + (diffusion_height - bottom_thickness)/2])
             if (cell_shape == "circular") {
-                cylinder(d=led_pitch - wall_thickness, h=diffusion_height - bottom_thickness + 0.1, center=true, $fn=64);
+                cylinder(d=led_pitch - wall_thickness + tolerance, h=diffusion_height - bottom_thickness + 0.1, center=true, $fn=64);
             } else {
                 // For square cells in a ring, we rotate them to align with the radius
                 // Width is radial, height is tangential (arc-like)
-                cube([ring_width - wall_thickness, (3.14159 * (outer_diameter+inner_diameter)/2 / num_leds) - wall_thickness, diffusion_height - bottom_thickness + 0.1], center=true);
+                cube([ring_width - wall_thickness + tolerance, (3.14159 * (outer_diameter+inner_diameter)/2 / num_leds) - wall_thickness + tolerance, diffusion_height - bottom_thickness + 0.1], center=true);
             }
         }
     }
