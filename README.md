@@ -55,8 +55,15 @@ The OpenSCAD script `src/diffuser.scad` provides several parameters for customiz
 | `diffusion_height` | `10` | Distance from LED to diffuser top (mm). |
 | `bottom_thickness` | `0.4` | Thickness of the top diffusion layer (mm). |
 | `cell_shape` | `"square"` | Cavity shape: `"square"` or `"circular"`. |
+| `draft_angle` | `0` | Angle of the side walls (degrees) for tapered cavities. |
 | `frame_enabled` | `false` | If `true`, adds a reinforced outer frame. |
 | `frame_width` | `2.0` | Thickness of the outer frame (mm). |
+| `cutout_enabled` | `false` | If `true`, adds cable cutouts. |
+| `cutout_width` | `10` | Width of the cable cutout (mm). |
+| `cutout_depth` | `3` | Depth of the cable cutout (mm). |
+| `cutout_side` | `"bottom"` | Position of the cutout: `"left"`, `"right"`, `"top"`, `"bottom"` (matrix) or `"inner"`, `"outer"` (ring). |
+| `mounting_holes_enabled` | `false` | If `true`, adds mounting tabs and holes. |
+| `mounting_hole_dia` | `3.0` | Diameter of the mounting holes (mm). |
 | `rows` | `16` | Number of rows (matrix only). |
 | `cols` | `16` | Number of columns (matrix only). |
 | `num_leds` | `20` | Number of LEDs (ring only). |

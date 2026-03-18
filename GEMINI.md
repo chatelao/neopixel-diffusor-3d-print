@@ -6,7 +6,7 @@ Ein Generator für 3D-Druckdateien von Diffusoraufsätzen an parametrierbaren Gr
 - 8x32 Panel (80x320mm, 10mm Pitch)
 - Runder Ring mit 20 NeoPixeln (ca. 62mm OD)
 
-## Aktueller Status (Implementierte Schritte 1-14, 16, 19, 21-25, 27, 29)
+## Aktueller Status (Implementierte Schritte 1-19, 21-27, 29)
 - [x] 1. Analyse der Hardware-Dimensionen
 - [x] 2. Recherche Ring-Parameter
 - [x] 3. OpenSCAD Umgebung einrichten (`src/diffuser.scad`)
@@ -21,13 +21,17 @@ Ein Generator für 3D-Druckdateien von Diffusoraufsätzen an parametrierbaren Gr
 - [x] 12. Entwicklung der 8x32 Konfiguration
 - [x] 13. Mathematik für den Ring-Diffusor
 - [x] 14. Implementierung des Ring-Moduls
+- [x] 15. Hohlraum-Design (Tapered Cavities)
 - [x] 16. Boden-Integration
+- [x] 17. Kabelaussparungen
+- [x] 18. Montage-Elemente (Mounting Holes)
 - [x] 19. Stabilitätsrahmen
 - [x] 21. Python-Wrapper erstellen
 - [x] 22. Automatisierter STL-Export
 - [x] 23. Vorschau-Generierung
 - [x] 24. Konfigurationsdatei (JSON)
 - [x] 25. Fehlerbehandlung im Skript
+- [x] 26. Optimierung der Wandgeometrie (Draft Angles)
 - [x] 27. Batch-Processing
 - [x] 29. Dokumentation der Parameter
 
