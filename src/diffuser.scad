@@ -27,6 +27,10 @@ mounting_hole_dia = 3.0;
 // Matrix specific
 rows = 16;
 cols = 16;
+row_start = 0;
+row_end = -1;     // -1 means use rows-1
+col_start = 0;
+col_end = -1;     // -1 means use cols-1
 
 // Ring specific
 num_leds = 20;
@@ -66,6 +70,9 @@ module cell() {
 }
 
 module matrix_layout() {
+    actual_row_end = (row_end == -1) ? rows - 1 : row_end;
+    actual_col_end = (col_end == -1) ? cols - 1 : col_end;
+
     total_width = cols * led_pitch;
     total_height = rows * led_pitch;
 
@@ -73,29 +80,52 @@ module matrix_layout() {
         union() {
             // Optional frame
             if (frame_enabled) {
-                translate([-led_pitch/2, -led_pitch/2, 0])
-                difference() {
-                    translate([-frame_width, -frame_width, 0])
-                    cube([total_width + 2*frame_width, total_height + 2*frame_width, diffusion_height]);
-
-                    translate([0, 0, -1])
-                    cube([total_width, total_height, diffusion_height + 2]);
+                // Left frame
+                if (col_start == 0) {
+                    translate([-led_pitch/2 - frame_width, (row_start-0.5)*led_pitch, 0])
+                    cube([frame_width, (actual_row_end - row_start + 1) * led_pitch, diffusion_height]);
+                }
+                // Right frame
+                if (actual_col_end == cols - 1) {
+                    translate([(actual_col_end+0.5)*led_pitch, (row_start-0.5)*led_pitch, 0])
+                    cube([frame_width, (actual_row_end - row_start + 1) * led_pitch, diffusion_height]);
+                }
+                // Bottom frame
+                if (row_start == 0) {
+                    translate([(col_start-0.5)*led_pitch - (col_start == 0 ? frame_width : 0), -led_pitch/2 - frame_width, 0])
+                    cube([(actual_col_end - col_start + 1) * led_pitch + (col_start == 0 ? frame_width : 0) + (actual_col_end == cols - 1 ? frame_width : 0), frame_width, diffusion_height]);
+                }
+                // Top frame
+                if (actual_row_end == rows - 1) {
+                    translate([(col_start-0.5)*led_pitch - (col_start == 0 ? frame_width : 0), (actual_row_end+0.5)*led_pitch, 0])
+                    cube([(actual_col_end - col_start + 1) * led_pitch + (col_start == 0 ? frame_width : 0) + (actual_col_end == cols - 1 ? frame_width : 0), frame_width, diffusion_height]);
                 }
             }
 
             // Mounting tabs
             if (mounting_holes_enabled && frame_enabled) {
                 tab_size = mounting_hole_dia * 2;
-                for (x = [-led_pitch/2 - frame_width, (cols-1)*led_pitch + led_pitch/2 + frame_width]) {
-                    for (y = [-led_pitch/2 - frame_width, (rows-1)*led_pitch + led_pitch/2 + frame_width]) {
-                        translate([x, y, 0])
-                        cylinder(d=tab_size, h=diffusion_height, $fn=32);
-                    }
+                // Corners
+                if (col_start == 0 && row_start == 0) {
+                    translate([-led_pitch/2 - frame_width, -led_pitch/2 - frame_width, 0])
+                    cylinder(d=tab_size, h=diffusion_height, $fn=32);
+                }
+                if (actual_col_end == cols - 1 && row_start == 0) {
+                    translate([(cols-1)*led_pitch + led_pitch/2 + frame_width, -led_pitch/2 - frame_width, 0])
+                    cylinder(d=tab_size, h=diffusion_height, $fn=32);
+                }
+                if (col_start == 0 && actual_row_end == rows - 1) {
+                    translate([-led_pitch/2 - frame_width, (rows-1)*led_pitch + led_pitch/2 + frame_width, 0])
+                    cylinder(d=tab_size, h=diffusion_height, $fn=32);
+                }
+                if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
+                    translate([(cols-1)*led_pitch + led_pitch/2 + frame_width, (rows-1)*led_pitch + led_pitch/2 + frame_width, 0])
+                    cylinder(d=tab_size, h=diffusion_height, $fn=32);
                 }
             }
 
-            for (r = [0 : rows - 1]) {
-                for (c = [0 : cols - 1]) {
+            for (r = [row_start : actual_row_end]) {
+                for (c = [col_start : actual_col_end]) {
                     translate([c * led_pitch, r * led_pitch, diffusion_height/2])
                     cell();
                 }
@@ -104,26 +134,37 @@ module matrix_layout() {
 
         // Mounting holes
         if (mounting_holes_enabled && frame_enabled) {
-            for (x = [-led_pitch/2 - frame_width, (cols-1)*led_pitch + led_pitch/2 + frame_width]) {
-                for (y = [-led_pitch/2 - frame_width, (rows-1)*led_pitch + led_pitch/2 + frame_width]) {
-                    translate([x, y, -1])
-                    cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
-                }
+            // Corners
+            if (col_start == 0 && row_start == 0) {
+                translate([-led_pitch/2 - frame_width, -led_pitch/2 - frame_width, -1])
+                cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
+            }
+            if (actual_col_end == cols - 1 && row_start == 0) {
+                translate([(cols-1)*led_pitch + led_pitch/2 + frame_width, -led_pitch/2 - frame_width, -1])
+                cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
+            }
+            if (col_start == 0 && actual_row_end == rows - 1) {
+                translate([-led_pitch/2 - frame_width, (rows-1)*led_pitch + led_pitch/2 + frame_width, -1])
+                cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
+            }
+            if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
+                translate([(cols-1)*led_pitch + led_pitch/2 + frame_width, (rows-1)*led_pitch + led_pitch/2 + frame_width, -1])
+                cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
             }
         }
 
         // Cable cutout
         if (cutout_enabled) {
-            if (cutout_side == "bottom") {
+            if (cutout_side == "bottom" && row_start == 0) {
                 translate([(cols-1)*led_pitch/2, -led_pitch/2 - frame_width/2, cutout_depth/2 - 0.1])
                 cube([cutout_width, frame_width + 2, cutout_depth + 0.2], center=true);
-            } else if (cutout_side == "top") {
+            } else if (cutout_side == "top" && actual_row_end == rows - 1) {
                 translate([(cols-1)*led_pitch/2, (rows-1)*led_pitch + led_pitch/2 + frame_width/2, cutout_depth/2 - 0.1])
                 cube([cutout_width, frame_width + 2, cutout_depth + 0.2], center=true);
-            } else if (cutout_side == "left") {
+            } else if (cutout_side == "left" && col_start == 0) {
                 translate([-led_pitch/2 - frame_width/2, (rows-1)*led_pitch/2, cutout_depth/2 - 0.1])
                 cube([frame_width + 2, cutout_width, cutout_depth + 0.2], center=true);
-            } else if (cutout_side == "right") {
+            } else if (cutout_side == "right" && actual_col_end == cols - 1) {
                 translate([(cols-1)*led_pitch + led_pitch/2 + frame_width/2, (rows-1)*led_pitch/2, cutout_depth/2 - 0.1])
                 cube([frame_width + 2, cutout_width, cutout_depth + 0.2], center=true);
             }
