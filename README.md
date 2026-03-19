@@ -38,6 +38,10 @@ To generate all STL and PNG files, run:
 python3 scripts/generate_stl.py
 ```
 
+## Live Preview
+Die generierten Modelle können interaktiv im Browser betrachtet werden:
+[GitHub Pages 3D View](https://jules.github.io/neopixel-diffuser-generator/)
+
 To generate a specific panel:
 ```bash
 python3 scripts/generate_stl.py --panel 16x16
