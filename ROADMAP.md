@@ -38,3 +38,8 @@ Diese Roadmap beschreibt die 30 Schritte zur Umsetzung eines parametrierbaren Ge
 - [x] 28. **Slicer-Test (Virtuell):** Prüfung der STL-Dateien auf Druckbarkeit und Manifold-Status.
 - [x] 29. **Dokumentation der Parameter:** Erstellung einer Tabelle mit allen einstellbaren Werten in einer README.
 - [x] 30. **Abschluss und Review:** Finale Kontrolle der Roadmap-Ergebnisse gegen die Projektziele in GEMINI.md.
+- [x] 31. **Unterstützung für hexagonale Matrix-Layouts:** Implementierung eines versetzten Grids für hexagonale LED-Anordnungen.
+- [x] 32. **Hexagonale Zellform:** Optionale hexagonale Kammergeometrie für alle Layouts.
+- [x] 33. **Multi-Material-Support:** Trennung von Gehäuse und Diffusor-Schicht für den Druck mit mehreren Filamenten.
+- [x] 34. **Konfigurationsbibliothek erweitern:** Hinzufügen von 8x8 Matrizen und weiteren Ring-Größen (12, 16, 24 LEDs).
+- [x] 35. **Automatisierung für Multi-Material:** Erweiterung des Python-Skripts für den Export getrennter Komponenten.

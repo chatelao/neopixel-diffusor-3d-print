@@ -7,8 +7,11 @@ tolerance = 0.1;          // Offset for fit (mm)
 wall_thickness = 0.8;     // Width of the dividing walls (mm)
 diffusion_height = 10;    // Distance from LED to diffuser top (mm)
 bottom_thickness = 0.4;   // Optional thin diffusion layer at the top (mm)
-cell_shape = "square";    // "square" or "circular"
+cell_shape = "square";    // "square", "circular" or "hexagonal"
 draft_angle = 0;          // Angle of the side walls (degrees)
+
+// Multi-Material
+part = "all";             // "all", "body", "diffuser"
 
 // Stability frame
 frame_enabled = false;    // Add a reinforced outer frame
@@ -49,23 +52,60 @@ module cell() {
     delta = 2 * h * tan(draft_angle);
     entry_dim = max(1.0, exit_dim - delta); // Ensure it doesn't disappear
 
-    difference() {
-        // Outer boundary of the cell
-        cube([led_pitch, led_pitch, diffusion_height], center=true);
+    if (part == "all" || part == "body") {
+        difference() {
+            // Outer boundary of the cell
+            cube([led_pitch, led_pitch, diffusion_height], center=true);
 
-        // Inner cavity (hollow part)
-        // d1 is at diffusion layer, d2 is at LED side
-        translate([0, 0, bottom_thickness/2])
-        if (cell_shape == "circular") {
-            cylinder(d1=exit_dim, d2=entry_dim, h=h + 0.1, center=true, $fn=64);
-        } else {
-            hull() {
-                translate([0, 0, -h/2])
-                cube([exit_dim, exit_dim, 0.01], center=true);
-                translate([0, 0, h/2])
-                cube([entry_dim, entry_dim, 0.01], center=true);
+            // Inner cavity (hollow part)
+            // d1 is at diffusion layer, d2 is at LED side
+            translate([0, 0, bottom_thickness/2])
+            if (cell_shape == "circular") {
+                cylinder(d1=exit_dim, d2=entry_dim, h=h + 0.1, center=true, $fn=64);
+            } else if (cell_shape == "hexagonal") {
+                // d = 2 * r_inscribed; exit_dim is roughly the width
+                cylinder(d1=exit_dim/cos(30), d2=entry_dim/cos(30), h=h + 0.1, center=true, $fn=6);
+            } else {
+                hull() {
+                    translate([0, 0, -h/2])
+                    cube([exit_dim, exit_dim, 0.01], center=true);
+                    translate([0, 0, h/2])
+                    cube([entry_dim, entry_dim, 0.01], center=true);
+                }
+            }
+
+            // If we are printing only the body, remove the diffusion layer area
+            if (part == "body") {
+                translate([0, 0, -diffusion_height/2 + bottom_thickness/2])
+                cube([led_pitch + 0.1, led_pitch + 0.1, bottom_thickness + 0.01], center=true);
             }
         }
+    }
+
+    if (part == "diffuser") {
+        translate([0, 0, -diffusion_height/2 + bottom_thickness/2])
+        cube([led_pitch, led_pitch, bottom_thickness], center=true);
+    }
+}
+
+module hex_matrix_layout() {
+    actual_row_end = (row_end == -1) ? rows - 1 : row_end;
+    actual_col_end = (col_end == -1) ? cols - 1 : col_end;
+
+    // In a hex grid, vertical pitch is pitch * sin(60)
+    v_pitch = led_pitch * sqrt(3) / 2;
+
+    difference() {
+        union() {
+            for (r = [row_start : actual_row_end]) {
+                row_offset = (r % 2 == 1) ? led_pitch / 2 : 0;
+                for (c = [col_start : actual_col_end]) {
+                    translate([c * led_pitch + row_offset, r * v_pitch, diffusion_height/2])
+                    cell();
+                }
+            }
+        }
+        // Frame/Mounting logic for hex can be complex, skipping for now unless needed
     }
 }
 
@@ -250,6 +290,8 @@ module ring_layout() {
 // --- Render Logic ---
 if (type == "matrix") {
     matrix_layout();
+} else if (type == "hex_matrix") {
+    hex_matrix_layout();
 } else if (type == "ring") {
     ring_layout();
 } else {
