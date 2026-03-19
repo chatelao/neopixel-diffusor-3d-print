@@ -22,10 +22,10 @@ Diese Roadmap beschreibt die 30 Schritte zur Umsetzung eines parametrierbaren Ge
 - [x] 12. **Entwicklung der 8x32 Konfiguration:** Vordefinierter Parametersatz für das 8x32 Panel.
 - [x] 13. **Mathematik für den Ring-Diffusor:** Berechnung der Positionen basierend auf dem Radius und dem Winkel (360/20 Grad).
 - [x] 14. **Implementierung des Ring-Moduls:** Polare Anordnung der Diffusor-Kammern für den 20-LED Ring.
-- [ ] 15. **Hohlraum-Design:** Optimierung der Kammern zur Reduzierung von Lichtlecks zwischen benachbarten LEDs.
+- [x] 15. **Hohlraum-Design:** Optimierung der Kammern zur Reduzierung von Lichtlecks zwischen benachbarten LEDs.
 - [x] 16. **Boden-Integration:** Optionale dünne Diffusionsschicht am oberen Ende der Kammern (0.4mm - 0.8mm).
-- [ ] 17. **Kabelaussparungen:** Automatisierte Erstellung von Ausschnitten für die Stromeinspeisung und Datenleitungen.
-- [ ] 18. **Montage-Elemente:** Design von seitlichen Laschen oder Schnappverschlüssen zur Befestigung am Panel.
+- [x] 17. **Kabelaussparungen:** Automatisierte Erstellung von Ausschnitten für die Stromeinspeisung und Datenleitungen.
+- [x] 18. **Montage-Elemente:** Design von seitlichen Laschen oder Schnappverschlüssen zur Befestigung am Panel.
 - [x] 19. **Stabilitätsrahmen:** Integration eines verstärkten Außenrahmens für große Matrizen (Verzugsprävention).
 - [ ] 20. **Modularitäts-Option:** Aufteilung großer Matrizen in druckbare Segmente (z.B. 4x 8x8 für 16x16).
 - [x] 21. **Python-Wrapper erstellen:** Entwicklung eines Skripts zur Steuerung von OpenSCAD via Kommandozeile.
@@ -33,7 +33,7 @@ Diese Roadmap beschreibt die 30 Schritte zur Umsetzung eines parametrierbaren Ge
 - [x] 23. **Vorschau-Generierung:** Automatisches Rendern von PNG-Vorschaubildern zur visuellen Kontrolle.
 - [x] 24. **Konfigurationsdatei (JSON):** Speicherung der Panel-Parameter in einer externen JSON-Datei für einfache Erweiterbarkeit.
 - [x] 25. **Fehlerbehandlung im Skript:** Validierung der Parameter vor dem Aufruf von OpenSCAD.
-- [ ] 26. **Optimierung der Wandgeometrie:** Implementierung von Schrägen (Draft Angles) für besseren Lichtaustritt.
+- [x] 26. **Optimierung der Wandgeometrie:** Implementierung von Schrägen (Draft Angles) für besseren Lichtaustritt.
 - [x] 27. **Batch-Processing:** Möglichkeit, alle Varianten mit einem einzigen Befehl zu generieren.
 - [ ] 28. **Slicer-Test (Virtuell):** Prüfung der STL-Dateien auf Druckbarkeit und Manifold-Status.
 - [x] 29. **Dokumentation der Parameter:** Erstellung einer Tabelle mit allen einstellbaren Werten in einer README.

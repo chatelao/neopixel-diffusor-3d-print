@@ -3,19 +3,27 @@
         "led_pitch": 10,
         "rows": 16,
         "cols": 16,
-        "type": "matrix"
+        "type": "matrix",
+        "frame_enabled": true,
+        "draft_angle": 5,
+        "mounting_holes_enabled": true
     },
     "8x32": {
         "led_pitch": 10,
         "rows": 8,
         "cols": 32,
-        "type": "matrix"
+        "type": "matrix",
+        "frame_enabled": true,
+        "cutout_enabled": true,
+        "cutout_side": "bottom"
     },
     "ring_20": {
         "led_pitch": 10,
         "num_leds": 20,
         "outer_diameter": 62,
         "inner_diameter": 47,
-        "type": "ring"
+        "type": "ring",
+        "draft_angle": 5,
+        "mounting_holes_enabled": true
     }
 }

@@ -58,6 +58,8 @@ def generate_output(panel_name, config, output_dir="stl", image_dir="images", ge
     for key, value in config.items():
         if isinstance(value, str):
             params.extend(["-D", f'{key}="{value}"'])
+        elif isinstance(value, bool):
+            params.extend(["-D", f"{key}={'true' if value else 'false'}"])
         else:
             params.extend(["-D", f"{key}={value}"])
 
