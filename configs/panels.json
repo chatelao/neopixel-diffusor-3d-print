@@ -17,6 +17,14 @@
         "cutout_enabled": true,
         "cutout_side": "bottom"
     },
+    "8x8": {
+        "led_pitch": 10,
+        "rows": 8,
+        "cols": 8,
+        "type": "matrix",
+        "frame_enabled": true,
+        "mounting_holes_enabled": true
+    },
     "ring_20": {
         "led_pitch": 10,
         "num_leds": 20,
@@ -25,5 +33,36 @@
         "type": "ring",
         "draft_angle": 5,
         "mounting_holes_enabled": true
+    },
+    "ring_12": {
+        "led_pitch": 10,
+        "num_leds": 12,
+        "outer_diameter": 37,
+        "inner_diameter": 22,
+        "type": "ring",
+        "mounting_holes_enabled": true
+    },
+    "ring_16": {
+        "led_pitch": 10,
+        "num_leds": 16,
+        "outer_diameter": 45,
+        "inner_diameter": 30,
+        "type": "ring",
+        "mounting_holes_enabled": true
+    },
+    "ring_24": {
+        "led_pitch": 10,
+        "num_leds": 24,
+        "outer_diameter": 66,
+        "inner_diameter": 51,
+        "type": "ring",
+        "mounting_holes_enabled": true
+    },
+    "hex_7": {
+        "led_pitch": 10,
+        "rows": 3,
+        "cols": 3,
+        "type": "hex_matrix",
+        "cell_shape": "hexagonal"
     }
 }

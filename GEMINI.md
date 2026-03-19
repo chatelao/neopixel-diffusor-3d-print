@@ -37,6 +37,11 @@ Ein Generator für 3D-Druckdateien von Diffusoraufsätzen an parametrierbaren Gr
 - [x] 28. Slicer-Test (Virtuell)
 - [x] 29. Dokumentation der Parameter
 - [x] 30. Abschluss und Review
+- [x] 31. Unterstützung für hexagonale Matrix-Layouts
+- [x] 32. Hexagonale Zellform
+- [x] 33. Multi-Material-Support
+- [x] 34. Konfigurationsbibliothek erweitern
+- [x] 35. Automatisierung für Multi-Material
 
 ## Projektstruktur
 - `/src`: OpenSCAD Quellcode (`diffuser.scad`)
