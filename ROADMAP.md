@@ -27,7 +27,7 @@ Diese Roadmap beschreibt die 30 Schritte zur Umsetzung eines parametrierbaren Ge
 - [x] 17. **Kabelaussparungen:** Automatisierte Erstellung von Ausschnitten für die Stromeinspeisung und Datenleitungen.
 - [x] 18. **Montage-Elemente:** Design von seitlichen Laschen oder Schnappverschlüssen zur Befestigung am Panel.
 - [x] 19. **Stabilitätsrahmen:** Integration eines verstärkten Außenrahmens für große Matrizen (Verzugsprävention).
-- [ ] 20. **Modularitäts-Option:** Aufteilung großer Matrizen in druckbare Segmente (z.B. 4x 8x8 für 16x16).
+- [x] 20. **Modularitäts-Option:** Aufteilung großer Matrizen in druckbare Segmente (z.B. 4x 8x8 für 16x16).
 - [x] 21. **Python-Wrapper erstellen:** Entwicklung eines Skripts zur Steuerung von OpenSCAD via Kommandozeile.
 - [x] 22. **Automatisierter STL-Export:** Skriptgesteuerter Export für alle Zielgrößen (16x16, 8x32, Ring).
 - [x] 23. **Vorschau-Generierung:** Automatisches Rendern von PNG-Vorschaubildern zur visuellen Kontrolle.
@@ -35,6 +35,6 @@ Diese Roadmap beschreibt die 30 Schritte zur Umsetzung eines parametrierbaren Ge
 - [x] 25. **Fehlerbehandlung im Skript:** Validierung der Parameter vor dem Aufruf von OpenSCAD.
 - [x] 26. **Optimierung der Wandgeometrie:** Implementierung von Schrägen (Draft Angles) für besseren Lichtaustritt.
 - [x] 27. **Batch-Processing:** Möglichkeit, alle Varianten mit einem einzigen Befehl zu generieren.
-- [ ] 28. **Slicer-Test (Virtuell):** Prüfung der STL-Dateien auf Druckbarkeit und Manifold-Status.
+- [x] 28. **Slicer-Test (Virtuell):** Prüfung der STL-Dateien auf Druckbarkeit und Manifold-Status.
 - [x] 29. **Dokumentation der Parameter:** Erstellung einer Tabelle mit allen einstellbaren Werten in einer README.
-- [ ] 30. **Abschluss und Review:** Finale Kontrolle der Roadmap-Ergebnisse gegen die Projektziele in GEMINI.md.
+- [x] 30. **Abschluss und Review:** Finale Kontrolle der Roadmap-Ergebnisse gegen die Projektziele in GEMINI.md.
