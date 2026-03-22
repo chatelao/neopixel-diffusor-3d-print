@@ -20,7 +20,7 @@ def load_configs(config_path):
 
 def validate_config(name, config):
     required_fields = ["type"]
-    if config.get("type") == "matrix":
+    if config.get("type") == "matrix" or config.get("type") == "hex_matrix":
         required_fields.extend(["rows", "cols", "led_pitch"])
     elif config.get("type") == "ring":
         required_fields.extend(["num_leds", "outer_diameter", "inner_diameter"])
@@ -43,8 +43,10 @@ def generate_output(panel_name, config, output_dir="stl", image_dir="images", ge
     if generate_png and not os.path.exists(image_dir):
         os.makedirs(image_dir)
 
-    stl_file = os.path.join(output_dir, f"diffuser_{panel_name}.stl")
-    png_file = os.path.join(image_dir, f"diffuser_{panel_name}.png")
+    part = config.get("part", "all")
+    part_suffix = f"_{part}" if part != "all" else ""
+    stl_file = os.path.join(output_dir, f"diffuser_{panel_name}{part_suffix}.stl")
+    png_file = os.path.join(image_dir, f"diffuser_{panel_name}{part_suffix}.png")
     scad_file = "src/diffuser.scad"
 
     # Base command for STL
