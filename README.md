@@ -2,6 +2,10 @@
 
 A parametric OpenSCAD generator for 3D-printable NeoPixel diffuser attachments.
 
+## Live Preview
+Explore the generated 3D models directly in your browser:
+[https://chatelao.github.io/neopixel-diffusor-3d-print/](https://chatelao.github.io/neopixel-diffusor-3d-print/)
+
 ## Target Configurations
 
 ### 16x16 Matrix (160x160mm / 6.3x6.3")
