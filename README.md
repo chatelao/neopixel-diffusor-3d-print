@@ -4,15 +4,15 @@ A parametric OpenSCAD generator for 3D-printable NeoPixel diffuser attachments.
 
 ## Target Configurations
 
-### 16x16 Matrix (160x160mm)
-- **Dimensions:** 160x160mm
+### 16x16 Matrix (160x160mm / 6.3x6.3")
+- **Dimensions:** 160x160mm (6.3 x 6.3 inches)
 - **LED Pitch:** 10mm
 - **Layout:** 16 rows, 16 columns
 
 ![16x16 Diffuser](images/diffuser_16x16.png)
 
-### 8x32 Matrix (80x320mm)
-- **Dimensions:** 80x320mm
+### 8x32 Matrix (80x320mm / 3.15x12.6")
+- **Dimensions:** 80x320mm (3.15 x 12.6 inches)
 - **LED Pitch:** 10mm
 - **Layout:** 8 rows, 32 columns
 
