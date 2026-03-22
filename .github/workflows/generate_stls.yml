@@ -27,6 +27,11 @@ jobs:
     - name: Generate STLs
       run: python scripts/generate_stl.py
 
+    - name: Sync STLs to docs
+      run: |
+        mkdir -p docs/stl
+        cp stl/*.stl docs/stl/
+
     - name: Upload STLs
       uses: actions/upload-artifact@v4
       with:
