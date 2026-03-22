@@ -38,3 +38,6 @@ Diese Roadmap beschreibt die 30 Schritte zur Umsetzung eines parametrierbaren Ge
 - [x] 28. **Slicer-Test (Virtuell):** Prüfung der STL-Dateien auf Druckbarkeit und Manifold-Status.
 - [x] 29. **Dokumentation der Parameter:** Erstellung einer Tabelle mit allen einstellbaren Werten in einer README.
 - [x] 30. **Abschluss und Review:** Finale Kontrolle der Roadmap-Ergebnisse gegen die Projektziele in GEMINI.md.
+- [x] 31. **Hexagonal-Zellen:** Unterstützung für hexagonale Diffusor-Ausschnitte für spezielle LED-Anordnungen.
+- [x] 32. **Waben-Matrix-Layout:** Implementierung eines versetzten Layouts für Hex-Matrizen.
+- [x] 33. **Multi-Material-Support:** Option zum getrennten Export von Gehäuse und Diffusorschicht (für Dual-Extruder-Drucker).

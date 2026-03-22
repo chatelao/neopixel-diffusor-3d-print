@@ -20,7 +20,7 @@ def load_configs(config_path):
 
 def validate_config(name, config):
     required_fields = ["type"]
-    if config.get("type") == "matrix":
+    if config.get("type") in ["matrix", "hex_matrix"]:
         required_fields.extend(["rows", "cols", "led_pitch"])
     elif config.get("type") == "ring":
         required_fields.extend(["num_leds", "outer_diameter", "inner_diameter"])
@@ -34,7 +34,7 @@ def validate_config(name, config):
             return False
     return True
 
-def generate_output(panel_name, config, output_dir="stl", image_dir="images", generate_png=True):
+def generate_output(panel_name, config, output_dir="stl", image_dir="images", generate_png=True, multi_material=False):
     if not validate_config(panel_name, config):
         raise ValueError(f"Invalid configuration for {panel_name}")
 
@@ -43,47 +43,54 @@ def generate_output(panel_name, config, output_dir="stl", image_dir="images", ge
     if generate_png and not os.path.exists(image_dir):
         os.makedirs(image_dir)
 
-    stl_file = os.path.join(output_dir, f"diffuser_{panel_name}.stl")
-    png_file = os.path.join(image_dir, f"diffuser_{panel_name}.png")
     scad_file = "src/diffuser.scad"
 
-    # Base command for STL
-    stl_cmd = ["openscad", "-o", stl_file]
+    parts_to_generate = [("all", "")]
+    if multi_material:
+        parts_to_generate = [("body", "_body"), ("diffuser", "_diffuser")]
 
-    # Base command for PNG (with headless support)
-    png_cmd = ["xvfb-run", "openscad", "-o", png_file, "--render", "--imgsize=1024,768"]
+    for part_type, suffix in parts_to_generate:
+        stl_file = os.path.join(output_dir, f"diffuser_{panel_name}{suffix}.stl")
+        png_file = os.path.join(image_dir, f"diffuser_{panel_name}{suffix}.png")
 
-    # Add parameters
-    params = []
-    for key, value in config.items():
-        if isinstance(value, str):
-            params.extend(["-D", f'{key}="{value}"'])
-        elif isinstance(value, bool):
-            params.extend(["-D", f"{key}={'true' if value else 'false'}"])
-        else:
-            params.extend(["-D", f"{key}={value}"])
+        # Base command for STL
+        stl_cmd = ["openscad", "-o", stl_file]
 
-    stl_cmd.extend(params)
-    stl_cmd.append(scad_file)
+        # Base command for PNG (with headless support)
+        png_cmd = ["xvfb-run", "openscad", "-o", png_file, "--render", "--imgsize=1024,768"]
 
-    png_cmd.extend(params)
-    png_cmd.append(scad_file)
+        # Add parameters
+        params = ["-D", f'part="{part_type}"']
+        for key, value in config.items():
+            if key == "part": continue # Skip part as we override it
+            if isinstance(value, str):
+                params.extend(["-D", f'{key}="{value}"'])
+            elif isinstance(value, bool):
+                params.extend(["-D", f"{key}={'true' if value else 'false'}"])
+            else:
+                params.extend(["-D", f"{key}={value}"])
 
-    try:
-        # Generate STL
-        print(f"Generating STL for {panel_name}...")
-        subprocess.run(stl_cmd, check=True)
-        print(f"Successfully generated {stl_file}")
+        stl_cmd.extend(params)
+        stl_cmd.append(scad_file)
 
-        # Generate PNG
-        if generate_png:
-            print(f"Generating PNG for {panel_name}...")
-            subprocess.run(png_cmd, check=True)
-            print(f"Successfully generated {png_file}")
+        png_cmd.extend(params)
+        png_cmd.append(scad_file)
 
-    except (subprocess.CalledProcessError, FileNotFoundError) as e:
-        print(f"Error: OpenSCAD failed to run for {panel_name}: {e}")
-        raise
+        try:
+            # Generate STL
+            print(f"Generating STL for {panel_name} ({part_type})...")
+            subprocess.run(stl_cmd, check=True)
+            print(f"Successfully generated {stl_file}")
+
+            # Generate PNG
+            if generate_png:
+                print(f"Generating PNG for {panel_name} ({part_type})...")
+                subprocess.run(png_cmd, check=True)
+                print(f"Successfully generated {png_file}")
+
+        except (subprocess.CalledProcessError, FileNotFoundError) as e:
+            print(f"Error: OpenSCAD failed to run for {panel_name} ({part_type}): {e}")
+            raise
 
 if __name__ == "__main__":
     configs = load_configs(CONFIG_FILE)
@@ -91,14 +98,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate NeoPixel Diffuser STLs and PNGs")
     parser.add_argument("--panel", choices=list(configs.keys()) + ["all"], default="all", help="Panel to generate files for")
     parser.add_argument("--no-png", action="store_true", help="Skip PNG generation")
+    parser.add_argument("--multi", action="store_true", help="Generate separate files for body and diffuser parts")
     args = parser.parse_args()
 
     try:
         if args.panel == "all":
             for name, cfg in configs.items():
-                generate_output(name, cfg, generate_png=not args.no_png)
+                generate_output(name, cfg, generate_png=not args.no_png, multi_material=args.multi)
         else:
-            generate_output(args.panel, configs[args.panel], generate_png=not args.no_png)
+            generate_output(args.panel, configs[args.panel], generate_png=not args.no_png, multi_material=args.multi)
     except Exception as e:
         print(f"Execution failed: {e}")
         sys.exit(1)

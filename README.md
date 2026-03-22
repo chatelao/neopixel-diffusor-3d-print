@@ -48,13 +48,14 @@ The OpenSCAD script `src/diffuser.scad` provides several parameters for customiz
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `type` | `"matrix"` | Layout type: `"matrix"` or `"ring"`. |
+| `type` | `"matrix"` | Layout type: `"matrix"`, `"hex_matrix"`, or `"ring"`. |
 | `led_pitch` | `10` | Center-to-center distance between LEDs (mm). |
 | `tolerance` | `0.1` | Offset for fit (mm). |
 | `wall_thickness` | `0.8` | Width of the dividing walls (mm). |
-| `diffusion_height` | `10` | Distance from LED to diffuser top (mm). |
-| `bottom_thickness` | `0.4` | Thickness of the top diffusion layer (mm). |
-| `cell_shape` | `"square"` | Cavity shape: `"square"` or `"circular"`. |
+| `diffusion_height` | `10` | Total height from LED to top (mm). |
+| `diffuser_thickness` | `0.4` | Thickness of the top diffusion layer (mm). |
+| `cell_shape` | `"square"` | Cavity shape: `"square"`, `"circular"`, or `"hexagonal"`. |
+| `part` | `"all"` | Rendered part: `"all"`, `"body"`, or `"diffuser"`. |
 | `draft_angle` | `0` | Angle of the side walls (degrees) for tapered cavities. |
 | `frame_enabled` | `false` | If `true`, adds a reinforced outer frame. |
 | `frame_width` | `2.0` | Thickness of the outer frame (mm). |

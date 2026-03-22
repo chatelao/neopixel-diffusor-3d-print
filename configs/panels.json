@@ -34,5 +34,13 @@
         "cap_clearance_enabled": true,
         "cap_clearance_width": 2.5,
         "cap_clearance_height": 1.5
+    },
+    "hex_10x10": {
+        "type": "hex_matrix",
+        "rows": 10,
+        "cols": 10,
+        "led_pitch": 10,
+        "cell_shape": "hexagonal",
+        "diffuser_thickness": 0.6
     }
 }
