@@ -1,13 +1,14 @@
 // Parametric NeoPixel Diffuser Generator
 
 // --- Global Parameters ---
-type = "matrix";          // "matrix" or "ring"
+type = "matrix";          // "matrix", "hex_matrix", or "ring"
+part = "all";             // "all", "body", or "diffuser" for multi-material
 led_pitch = 10;           // Center-to-center distance between LEDs (mm)
 tolerance = 0.1;          // Offset for fit (mm)
 wall_thickness = 0.8;     // Width of the dividing walls (mm)
 diffusion_height = 10;    // Distance from LED to diffuser top (mm)
 bottom_thickness = 0.4;   // Optional thin diffusion layer at the top (mm)
-cell_shape = "square";    // "square" or "circular"
+cell_shape = "square";    // "square", "circular", or "hexagonal"
 draft_angle = 0;          // Angle of the side walls (degrees)
 
 // Capacitor clearance
@@ -55,30 +56,81 @@ module cell() {
     entry_dim = max(1.0, exit_dim - delta); // Ensure it doesn't disappear
 
     difference() {
-        // Outer boundary of the cell
-        cube([led_pitch, led_pitch, diffusion_height], center=true);
-
-        // Capacitor clearance
-        if (cap_clearance_enabled) {
-            for (a = [0, 90, 180, 270]) {
-                rotate([0, 0, a])
-                translate([led_pitch/2, 0, -diffusion_height/2 + cap_clearance_height/2])
-                cube([cap_clearance_width, led_pitch + 0.1, cap_clearance_height + 0.1], center=true);
+        union() {
+            if (part == "all" || part == "body") {
+                // Outer boundary of the cell (body part)
+                if (type == "hex_matrix") {
+                    // For hex matrix, the cell is a hexagonal prism
+                    // Rotated 30 degrees to align with flat sides for packing
+                    rotate([0, 0, 30])
+                    cylinder(d=led_pitch / cos(30), h=diffusion_height, center=true, $fn=6);
+                } else {
+                    cube([led_pitch, led_pitch, diffusion_height], center=true);
+                }
+            }
+            if (part == "diffuser") {
+                // Only the diffusion layer (at the bottom)
+                translate([0, 0, -diffusion_height/2 + bottom_thickness/2])
+                if (type == "hex_matrix") {
+                    rotate([0, 0, 30])
+                    cylinder(d=led_pitch / cos(30), h=bottom_thickness, center=true, $fn=6);
+                } else {
+                    cube([led_pitch, led_pitch, bottom_thickness], center=true);
+                }
             }
         }
 
-        // Inner cavity (hollow part)
-        // d1 is at diffusion layer, d2 is at LED side
-        translate([0, 0, bottom_thickness/2])
-        if (cell_shape == "circular") {
-            cylinder(d1=exit_dim, d2=entry_dim, h=h + 0.1, center=true, $fn=64);
-        } else {
-            hull() {
-                translate([0, 0, -h/2])
-                cube([exit_dim, exit_dim, 0.01], center=true);
-                translate([0, 0, h/2])
-                cube([entry_dim, entry_dim, 0.01], center=true);
+        // Subtract the cavity from the body
+        if (part == "all" || part == "body") {
+            // Capacitor clearance
+            if (cap_clearance_enabled) {
+                for (a = [0, 90, 180, 270]) {
+                    rotate([0, 0, a])
+                    translate([led_pitch/2, 0, -diffusion_height/2 + cap_clearance_height/2])
+                    cube([cap_clearance_width, led_pitch + 0.1, cap_clearance_height + 0.1], center=true);
+                }
             }
+
+            // Inner cavity (hollow part)
+            // d1 is at diffusion layer (bottom), d2 is at LED side (top)
+            cavity_h = (part == "all" ? h + 0.1 : diffusion_height + 0.1);
+
+            // Offset ensures bottom_thickness is preserved
+            translate([0, 0, (part == "all" ? bottom_thickness/2 + 0.05 : 0)]) {
+                if (cell_shape == "circular") {
+                    cylinder(d1=exit_dim, d2=entry_dim, h=cavity_h, center=true, $fn=64);
+                } else if (cell_shape == "hexagonal") {
+                    rotate([0, 0, 30])
+                    cylinder(d1=exit_dim/cos(30), d2=entry_dim/cos(30), h=cavity_h, center=true, $fn=6);
+                } else {
+                    hull() {
+                        translate([0, 0, -cavity_h/2])
+                        cube([exit_dim, exit_dim, 0.01], center=true);
+                        translate([0, 0, cavity_h/2])
+                        cube([entry_dim, entry_dim, 0.01], center=true);
+                    }
+                }
+            }
+        }
+    }
+}
+
+module hex_matrix_layout() {
+    actual_row_end = (row_end == -1) ? rows - 1 : row_end;
+    actual_col_end = (col_end == -1) ? cols - 1 : col_end;
+
+    // Hexagonal packing math (flat-to-flat = led_pitch):
+    // Horizontal distance = led_pitch
+    // Vertical distance = led_pitch * cos(30) = led_pitch * 0.866
+    // Rows are staggered by led_pitch / 2
+
+    row_dist = led_pitch * cos(30);
+
+    for (r = [row_start : actual_row_end]) {
+        x_offset = (r % 2 == 0) ? 0 : led_pitch / 2;
+        for (c = [col_start : actual_col_end]) {
+            translate([c * led_pitch + x_offset, r * row_dist, diffusion_height/2])
+            cell();
         }
     }
 }
@@ -272,6 +324,8 @@ module ring_layout() {
 // --- Render Logic ---
 if (type == "matrix") {
     matrix_layout();
+} else if (type == "hex_matrix") {
+    hex_matrix_layout();
 } else if (type == "ring") {
     ring_layout();
 } else {
