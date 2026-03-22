@@ -41,6 +41,9 @@ Ein Generator für 3D-Druckdateien von Diffusoraufsätzen an parametrierbaren Gr
 - [x] 32. Magnet-Halterungen
 - [x] 33. Multi-Material-Automatisierung
 - [x] 34. Erweiterte Konfigurationen & Bugfixes
+- [x] 35. Hex-Matrix Rahmen & Montage
+- [x] 36. Abgerundete Rahmenecken
+- [x] 37. Rahmen-Beschriftung
 
 ## Projektstruktur
 - `/src`: OpenSCAD Quellcode (`diffuser.scad`)

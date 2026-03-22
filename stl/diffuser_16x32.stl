@@ -21601,32 +21601,32 @@ solid OpenSCAD_Model
       vertex -7 -7 10
     endloop
   endfacet
-  facet normal 0 -1 0
-    outer loop
-      vertex -5 155 0
-      vertex 315 155 1.55
-      vertex -5 155 1.55
-    endloop
-  endfacet
-  facet normal 0 -1 -0
-    outer loop
-      vertex 315 155 1.55
-      vertex -5 155 0
-      vertex 315 155 0
-    endloop
-  endfacet
   facet normal 0 1 -0
     outer loop
-      vertex 315 -5 0
-      vertex -5 -5 1.55
-      vertex 315 -5 1.55
+      vertex 317 157 0
+      vertex -7 157 10
+      vertex 317 157 10
     endloop
   endfacet
   facet normal 0 1 0
     outer loop
-      vertex -5 -5 1.55
-      vertex 315 -5 0
-      vertex -5 -5 0
+      vertex -7 157 10
+      vertex 317 157 0
+      vertex -7 157 0
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex -7 -7 0
+      vertex 317 -7 10
+      vertex -7 -7 10
+    endloop
+  endfacet
+  facet normal 0 -1 -0
+    outer loop
+      vertex 317 -7 10
+      vertex -7 -7 0
+      vertex 317 -7 0
     endloop
   endfacet
   facet normal 1 -0 0
@@ -21657,32 +21657,32 @@ solid OpenSCAD_Model
       vertex 315 -5 1.55
     endloop
   endfacet
-  facet normal 0 -1 0
-    outer loop
-      vertex -7 -7 0
-      vertex 317 -7 10
-      vertex -7 -7 10
-    endloop
-  endfacet
-  facet normal 0 -1 -0
-    outer loop
-      vertex 317 -7 10
-      vertex -7 -7 0
-      vertex 317 -7 0
-    endloop
-  endfacet
   facet normal 0 1 -0
     outer loop
-      vertex 317 157 0
-      vertex -7 157 10
-      vertex 317 157 10
+      vertex 315 -5 0
+      vertex -5 -5 1.55
+      vertex 315 -5 1.55
     endloop
   endfacet
   facet normal 0 1 0
     outer loop
-      vertex -7 157 10
-      vertex 317 157 0
-      vertex -7 157 0
+      vertex -5 -5 1.55
+      vertex 315 -5 0
+      vertex -5 -5 0
+    endloop
+  endfacet
+  facet normal 0 -1 0
+    outer loop
+      vertex -5 155 0
+      vertex 315 155 1.55
+      vertex -5 155 1.55
+    endloop
+  endfacet
+  facet normal 0 -1 -0
+    outer loop
+      vertex 315 155 1.55
+      vertex -5 155 0
+      vertex 315 155 0
     endloop
   endfacet
   facet normal 0 0 -1

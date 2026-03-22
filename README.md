@@ -62,6 +62,10 @@ The OpenSCAD script `src/diffuser.scad` provides several parameters for customiz
 | `draft_angle` | `0` | Angle of the side walls (degrees) for tapered cavities. |
 | `frame_enabled` | `false` | If `true`, adds a reinforced outer frame. |
 | `frame_width` | `2.0` | Thickness of the outer frame (mm). |
+| `frame_radius` | `0.0` | Radius for rounded corners (mm). |
+| `label_text` | `""` | Text to emboss on the frame. |
+| `label_size` | `5.0` | Font size (mm) for the label. |
+| `label_depth` | `0.5` | Depth of the embossed text (mm). |
 | `cutout_enabled` | `false` | If `true`, adds cable cutouts. |
 | `cutout_width` | `10` | Width of the cable cutout (mm). |
 | `cutout_depth` | `3` | Depth of the cable cutout (mm). |
