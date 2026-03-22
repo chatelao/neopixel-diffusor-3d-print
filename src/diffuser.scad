@@ -30,6 +30,11 @@ cutout_side = "bottom";   // "left", "right", "top", "bottom" or "inner", "outer
 mounting_holes_enabled = false;
 mounting_hole_dia = 3.0;
 
+// Magnet mounts
+magnets_enabled = false;
+magnet_dia = 6.1;
+magnet_depth = 2.0;
+
 // Matrix specific
 rows = 16;
 cols = 16;
@@ -170,7 +175,7 @@ module matrix_layout() {
 
             // Mounting tabs
             if (mounting_holes_enabled && frame_enabled) {
-                tab_size = mounting_hole_dia * 2;
+                tab_size = magnets_enabled ? max(mounting_hole_dia * 2, magnet_dia + 2) : mounting_hole_dia * 2;
                 // Corners
                 if (col_start == 0 && row_start == 0) {
                     translate([-led_pitch/2 - frame_width, -led_pitch/2 - frame_width, 0])
@@ -219,6 +224,27 @@ module matrix_layout() {
             }
         }
 
+        // Magnet recesses
+        if (magnets_enabled && mounting_holes_enabled && frame_enabled) {
+            // Corners
+            if (col_start == 0 && row_start == 0) {
+                translate([-led_pitch/2 - frame_width, -led_pitch/2 - frame_width, -0.1])
+                cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
+            }
+            if (actual_col_end == cols - 1 && row_start == 0) {
+                translate([(cols-1)*led_pitch + led_pitch/2 + frame_width, -led_pitch/2 - frame_width, -0.1])
+                cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
+            }
+            if (col_start == 0 && actual_row_end == rows - 1) {
+                translate([-led_pitch/2 - frame_width, (rows-1)*led_pitch + led_pitch/2 + frame_width, -0.1])
+                cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
+            }
+            if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
+                translate([(cols-1)*led_pitch + led_pitch/2 + frame_width, (rows-1)*led_pitch + led_pitch/2 + frame_width, -0.1])
+                cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
+            }
+        }
+
         // Cable cutout
         if (cutout_enabled) {
             if (cutout_side == "bottom" && row_start == 0) {
@@ -250,7 +276,7 @@ module ring_layout() {
 
             // Mounting tabs for ring
             if (mounting_holes_enabled) {
-                tab_size = mounting_hole_dia * 2;
+                tab_size = magnets_enabled ? max(mounting_hole_dia * 2, magnet_dia + 2) : mounting_hole_dia * 2;
                 for (a = [0, 90, 180, 270]) {
                     rotate([0, 0, a])
                     translate([actual_outer/2, 0, 0])
@@ -268,6 +294,15 @@ module ring_layout() {
                 rotate([0, 0, a])
                 translate([actual_outer/2, 0, -1])
                 cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
+            }
+        }
+
+        // Magnet recesses for ring
+        if (magnets_enabled && mounting_holes_enabled) {
+            for (a = [0, 90, 180, 270]) {
+                rotate([0, 0, a])
+                translate([actual_outer/2, 0, -0.1])
+                cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
             }
         }
 
@@ -314,7 +349,7 @@ module ring_layout() {
             if (cap_clearance_enabled) {
                 // We place cutouts between LEDs along the ring path
                 rotate([0, 0, angle + 180/num_leds])
-                translate([radius, 0, -diffusion_height/2 + cap_clearance_height/2])
+                translate([radius, 0, cap_clearance_height/2])
                 cube([ring_width + 2, cap_clearance_width, cap_clearance_height + 0.1], center=true);
             }
         }

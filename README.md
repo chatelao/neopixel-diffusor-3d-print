@@ -68,6 +68,9 @@ The OpenSCAD script `src/diffuser.scad` provides several parameters for customiz
 | `cutout_side` | `"bottom"` | Position of the cutout: `"left"`, `"right"`, `"top"`, `"bottom"` (matrix) or `"inner"`, `"outer"` (ring). |
 | `mounting_holes_enabled` | `false` | If `true`, adds mounting tabs and holes. |
 | `mounting_hole_dia` | `3.0` | Diameter of the mounting holes (mm). |
+| `magnets_enabled` | `false` | If `true`, adds recesses for neodymium magnets in the mounting tabs. |
+| `magnet_dia` | `6.1` | Diameter of the magnet recesses (mm). |
+| `magnet_depth` | `2.0` | Depth of the magnet recesses (mm). |
 | `rows` | `16` | Number of rows (matrix only). |
 | `cols` | `16` | Number of columns (matrix only). |
 | `num_leds` | `20` | Number of LEDs (ring only). |

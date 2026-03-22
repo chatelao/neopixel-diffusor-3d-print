@@ -93,14 +93,27 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate NeoPixel Diffuser STLs and PNGs")
     parser.add_argument("--panel", choices=list(configs.keys()) + ["all"], default="all", help="Panel to generate files for")
     parser.add_argument("--no-png", action="store_true", help="Skip PNG generation")
+    parser.add_argument("--multi", action="store_true", help="Generate separate body and diffuser STLs")
     args = parser.parse_args()
 
     try:
+        def do_generate(name, cfg):
+            if args.multi:
+                body_cfg = cfg.copy()
+                body_cfg["part"] = "body"
+                generate_output(name, body_cfg, generate_png=not args.no_png)
+
+                diff_cfg = cfg.copy()
+                diff_cfg["part"] = "diffuser"
+                generate_output(name, diff_cfg, generate_png=not args.no_png)
+            else:
+                generate_output(name, cfg, generate_png=not args.no_png)
+
         if args.panel == "all":
             for name, cfg in configs.items():
-                generate_output(name, cfg, generate_png=not args.no_png)
+                do_generate(name, cfg)
         else:
-            generate_output(args.panel, configs[args.panel], generate_png=not args.no_png)
+            do_generate(args.panel, configs[args.panel])
     except Exception as e:
         print(f"Execution failed: {e}")
         sys.exit(1)

@@ -38,6 +38,9 @@ Ein Generator für 3D-Druckdateien von Diffusoraufsätzen an parametrierbaren Gr
 - [x] 29. Dokumentation der Parameter
 - [x] 30. Abschluss und Review
 - [x] 31. GitHub Pages Integration (STL 3D Viewers)
+- [x] 32. Magnet-Halterungen
+- [x] 33. Multi-Material-Automatisierung
+- [x] 34. Erweiterte Konfigurationen & Bugfixes
 
 ## Projektstruktur
 - `/src`: OpenSCAD Quellcode (`diffuser.scad`)
