@@ -31,7 +31,7 @@ jobs:
     - name: Generate STLs and Renderings
       run: |
         mkdir -p stl images
-        xvfb-run --auto-servernum python3 scripts/generate_stl.py --multi
+        python3 scripts/generate_stl.py --multi
 
     - name: Sync STLs to docs
       run: |

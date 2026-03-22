@@ -49,11 +49,15 @@ def generate_output(panel_name, config, output_dir="stl", image_dir="images", ge
     png_file = os.path.join(image_dir, f"diffuser_{panel_name}{part_suffix}.png")
     scad_file = "src/diffuser.scad"
 
-    # Base command for STL
-    stl_cmd = ["openscad", "-o", stl_file]
+    # Base command for STL (using binary format to save space)
+    stl_cmd = ["openscad", "-o", stl_file, "--export-format", "binstl"]
 
-    # Base command for PNG (with headless support)
-    png_cmd = ["xvfb-run", "openscad", "-o", png_file, "--render", "--imgsize=1024,768"]
+    # Base command for PNG
+    png_cmd = ["openscad", "-o", png_file, "--render", "--imgsize=1024,768", "--viewall", "--autocenter"]
+
+    # Wrap with xvfb-run if on Linux and no DISPLAY is set
+    if sys.platform.startswith("linux") and not os.environ.get("DISPLAY"):
+        png_cmd = ["xvfb-run", "--auto-servernum"] + png_cmd
 
     # Add parameters
     params = []
