@@ -39,3 +39,6 @@ Diese Roadmap beschreibt die 30 Schritte zur Umsetzung eines parametrierbaren Ge
 - [x] 29. **Dokumentation der Parameter:** Erstellung einer Tabelle mit allen einstellbaren Werten in einer README.
 - [x] 30. **Abschluss und Review:** Finale Kontrolle der Roadmap-Ergebnisse gegen die Projektziele in GEMINI.md.
 - [x] 31. **GitHub Pages Integration:** Einrichtung einer Weboberfläche zur 3D-Vorschau der Modelle im Browser.
+- [x] 32. **Magnet-Halterungen:** Optionale Aussparungen für Neodym-Magnete im Rahmen.
+- [x] 33. **Multi-Material-Automatisierung:** Erweiterung des Skripts für den automatischen Export von Einzelteilen.
+- [x] 34. **Erweiterte Konfigurationen & Bugfixes:** Hinzufügen von 16x32 und segmentierten Panels; Korrektur der Ring-Kondensator-Aussparungen.

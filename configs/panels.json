@@ -43,5 +43,32 @@
         "cell_shape": "hexagonal",
         "draft_angle": 5,
         "part": "all"
+    },
+    "16x32": {
+        "led_pitch": 10,
+        "rows": 16,
+        "cols": 32,
+        "type": "matrix",
+        "frame_enabled": true,
+        "cap_clearance_enabled": true
+    },
+    "16x16_segmented": {
+        "led_pitch": 10,
+        "rows": 16,
+        "cols": 16,
+        "row_start": 0,
+        "row_end": 7,
+        "type": "matrix",
+        "frame_enabled": true
+    },
+    "ring_20_magnets": {
+        "led_pitch": 10,
+        "num_leds": 20,
+        "outer_diameter": 62,
+        "inner_diameter": 47,
+        "type": "ring",
+        "mounting_holes_enabled": true,
+        "magnets_enabled": true,
+        "cap_clearance_enabled": true
     }
 }
