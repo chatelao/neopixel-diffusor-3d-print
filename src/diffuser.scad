@@ -10,6 +10,11 @@ bottom_thickness = 0.4;   // Optional thin diffusion layer at the top (mm)
 cell_shape = "square";    // "square" or "circular"
 draft_angle = 0;          // Angle of the side walls (degrees)
 
+// Capacitor clearance
+cap_clearance_enabled = false; // Space for SMD capacitors
+cap_clearance_width = 2.5;     // Width of the cutout (mm)
+cap_clearance_height = 1.5;    // Height of the cutout (mm)
+
 // Stability frame
 frame_enabled = false;    // Add a reinforced outer frame
 frame_width = 2.0;        // Thickness of the outer frame (mm)
@@ -52,6 +57,15 @@ module cell() {
     difference() {
         // Outer boundary of the cell
         cube([led_pitch, led_pitch, diffusion_height], center=true);
+
+        // Capacitor clearance
+        if (cap_clearance_enabled) {
+            for (a = [0, 90, 180, 270]) {
+                rotate([0, 0, a])
+                translate([led_pitch/2, 0, -diffusion_height/2 + cap_clearance_height/2])
+                cube([cap_clearance_width, led_pitch + 0.1, cap_clearance_height + 0.1], center=true);
+            }
+        }
 
         // Inner cavity (hollow part)
         // d1 is at diffusion layer, d2 is at LED side
@@ -242,6 +256,14 @@ module ring_layout() {
                     translate([0, 0, h/2])
                     cube([w_entry, l_entry, 0.01], center=true);
                 }
+            }
+
+            // Capacitor clearance for ring
+            if (cap_clearance_enabled) {
+                // We place cutouts between LEDs along the ring path
+                rotate([0, 0, angle + 180/num_leds])
+                translate([radius, 0, -diffusion_height/2 + cap_clearance_height/2])
+                cube([ring_width + 2, cap_clearance_width, cap_clearance_height + 0.1], center=true);
             }
         }
     }

@@ -6,7 +6,10 @@
         "type": "matrix",
         "frame_enabled": true,
         "draft_angle": 5,
-        "mounting_holes_enabled": true
+        "mounting_holes_enabled": true,
+        "cap_clearance_enabled": true,
+        "cap_clearance_width": 2.5,
+        "cap_clearance_height": 1.5
     },
     "8x32": {
         "led_pitch": 10,
@@ -15,7 +18,10 @@
         "type": "matrix",
         "frame_enabled": true,
         "cutout_enabled": true,
-        "cutout_side": "bottom"
+        "cutout_side": "bottom",
+        "cap_clearance_enabled": true,
+        "cap_clearance_width": 2.5,
+        "cap_clearance_height": 1.5
     },
     "ring_20": {
         "led_pitch": 10,
@@ -24,6 +30,9 @@
         "inner_diameter": 47,
         "type": "ring",
         "draft_angle": 5,
-        "mounting_holes_enabled": true
+        "mounting_holes_enabled": true,
+        "cap_clearance_enabled": true,
+        "cap_clearance_width": 2.5,
+        "cap_clearance_height": 1.5
     }
 }
