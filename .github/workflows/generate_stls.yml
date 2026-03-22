@@ -1,4 +1,4 @@
-name: Generate STLs
+name: Generate STLs and Deploy Docs
 
 on:
   push:
@@ -7,33 +7,57 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install OpenSCAD
+    - name: Install OpenSCAD and dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install openscad -y
+        sudo apt-get install openscad xvfb -y
 
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.x'
 
-    - name: Generate STLs
-      run: python scripts/generate_stl.py
+    - name: Generate STLs and Renderings
+      run: |
+        mkdir -p stl images
+        xvfb-run --auto-servernum python3 scripts/generate_stl.py --multi
 
     - name: Sync STLs to docs
       run: |
         mkdir -p docs/stl
         cp stl/*.stl docs/stl/
 
-    - name: Upload STLs
+    - name: Upload STLs as artifact
       uses: actions/upload-artifact@v4
       with:
         name: stl-files
         path: stl/*.stl
+
+    - name: Upload Pages artifact
+      if: github.ref == 'refs/heads/main'
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./docs
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
