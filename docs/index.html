@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoPixel Diffuser Models</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .viewer {
+            width: 100%;
+            height: 300px;
+            background-color: #eee;
+            position: relative;
+        }
+        .info {
+            padding: 15px;
+            border-top: 1px solid #eee;
+        }
+        .info h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>NeoPixel Diffuser Generator</h1>
+    <p>3D-printable attachments for various NeoPixel panels.</p>
+</header>
+
+<div class="grid">
+    <div class="card">
+        <div id="viewer-16x16" class="viewer" data-model="stl/diffuser_16x16.stl">
+            <div class="loading">Loading 16x16...</div>
+        </div>
+        <div class="info">
+            <h2>16x16 Matrix</h2>
+            <p>160x160mm diffuser for 16x16 LED matrices (10mm pitch).</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div id="viewer-8x32" class="viewer" data-model="stl/diffuser_8x32.stl">
+            <div class="loading">Loading 8x32...</div>
+        </div>
+        <div class="info">
+            <h2>8x32 Matrix</h2>
+            <p>80x320mm diffuser for 8x32 LED matrices (10mm pitch).</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div id="viewer-ring" class="viewer" data-model="stl/diffuser_ring_20.stl">
+            <div class="loading">Loading Ring...</div>
+        </div>
+        <div class="info">
+            <h2>20-LED Ring</h2>
+            <p>Diffuser for 20-LED NeoPixel rings (62mm OD).</p>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>Generated with OpenSCAD & Python. <a href="https://github.com/jules-software-engineer/neopixel-diffuser">View on GitHub</a></p>
+</footer>
+
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+    import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    function initViewer(containerId) {
+        const container = document.getElementById(containerId);
+        const modelPath = container.getAttribute('data-model');
+        const loadingMsg = container.querySelector('.loading');
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xeeeeee);
+
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(100, 100, 100);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+
+        const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight1.position.set(1, 1, 1);
+        scene.add(directionalLight1);
+
+        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.2);
+        directionalLight2.position.set(-1, -1, 1);
+        scene.add(directionalLight2);
+
+        const loader = new STLLoader();
+        loader.load(modelPath, function (geometry) {
+            const material = new THREE.MeshPhongMaterial({ color: 0x00aaff, specular: 0x111111, shininess: 200 });
+            const mesh = new THREE.Mesh(geometry, material);
+
+            geometry.computeBoundingBox();
+            const center = new THREE.Vector3();
+            geometry.boundingBox.getCenter(center);
+            mesh.position.sub(center);
+
+            scene.add(mesh);
+
+            // Adjust camera to fit model
+            const size = new THREE.Vector3();
+            geometry.boundingBox.getSize(size);
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const fov = camera.fov * (Math.PI / 180);
+            let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
+            cameraZ *= 1.5; // Zoom out a bit
+            camera.position.set(cameraZ, cameraZ, cameraZ);
+            camera.lookAt(0, 0, 0);
+            controls.update();
+
+            if (loadingMsg) loadingMsg.style.display = 'none';
+        }, undefined, function (error) {
+            console.error(error);
+            if (loadingMsg) loadingMsg.innerText = 'Error loading model';
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+    }
+
+    initViewer('viewer-16x16');
+    initViewer('viewer-8x32');
+    initViewer('viewer-ring');
+</script>
+
+</body>
+</html>
