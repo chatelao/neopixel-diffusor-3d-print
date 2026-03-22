@@ -42,3 +42,6 @@ Diese Roadmap beschreibt die 30 Schritte zur Umsetzung eines parametrierbaren Ge
 - [x] 32. **Magnet-Halterungen:** Optionale Aussparungen für Neodym-Magnete im Rahmen.
 - [x] 33. **Multi-Material-Automatisierung:** Erweiterung des Skripts für den automatischen Export von Einzelteilen.
 - [x] 34. **Erweiterte Konfigurationen & Bugfixes:** Hinzufügen von 16x32 und segmentierten Panels; Korrektur der Ring-Kondensator-Aussparungen.
+- [x] 35. **Hex-Matrix Rahmen & Montage:** Erweiterung des Hex-Matrix-Layouts um Rahmen, Montagebohrungen und Magnete.
+- [x] 36. **Abgerundete Rahmenecken:** Implementierung optionaler Radien für die Rahmenecken zur besseren Haptik.
+- [x] 37. **Rahmen-Beschriftung:** Unterstützung für Textprägungen auf dem Rahmen zur Identifikation.

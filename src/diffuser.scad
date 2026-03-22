@@ -19,6 +19,7 @@ cap_clearance_height = 1.5;    // Height of the cutout (mm)
 // Stability frame
 frame_enabled = false;    // Add a reinforced outer frame
 frame_width = 2.0;        // Thickness of the outer frame (mm)
+frame_radius = 0.0;       // Radius for rounded corners (mm)
 
 // Cable cutouts
 cutout_enabled = false;   // Add cutouts for cables
@@ -29,6 +30,11 @@ cutout_side = "bottom";   // "left", "right", "top", "bottom" or "inner", "outer
 // Mounting holes
 mounting_holes_enabled = false;
 mounting_hole_dia = 3.0;
+
+// Frame labeling
+label_text = "";          // Text to emboss on the frame
+label_size = 5.0;         // Font size (mm)
+label_depth = 0.5;        // Depth of the emboss (mm)
 
 // Magnet mounts
 magnets_enabled = false;
@@ -131,45 +137,49 @@ module hex_matrix_layout() {
 
     row_dist = led_pitch * cos(30);
 
-    for (r = [row_start : actual_row_end]) {
-        x_offset = (r % 2 == 0) ? 0 : led_pitch / 2;
-        for (c = [col_start : actual_col_end]) {
-            translate([c * led_pitch + x_offset, r * row_dist, diffusion_height/2])
-            cell();
-        }
-    }
-}
-
-module matrix_layout() {
-    actual_row_end = (row_end == -1) ? rows - 1 : row_end;
-    actual_col_end = (col_end == -1) ? cols - 1 : col_end;
-
-    total_width = cols * led_pitch;
-    total_height = rows * led_pitch;
+    x_min = (col_start - 0.5) * led_pitch - frame_width;
+    x_max = (actual_col_end + 0.5) * led_pitch + (actual_row_end > 0 ? led_pitch/2 : 0) + frame_width;
+    y_min = (row_start - 0.5) * led_pitch - frame_width;
+    y_max = actual_row_end * row_dist + led_pitch/2 + frame_width;
 
     difference() {
         union() {
             // Optional frame
             if (frame_enabled) {
-                // Left frame
-                if (col_start == 0) {
-                    translate([-led_pitch/2 - frame_width, (row_start-0.5)*led_pitch, 0])
-                    cube([frame_width, (actual_row_end - row_start + 1) * led_pitch, diffusion_height]);
-                }
-                // Right frame
-                if (actual_col_end == cols - 1) {
-                    translate([(actual_col_end+0.5)*led_pitch, (row_start-0.5)*led_pitch, 0])
-                    cube([frame_width, (actual_row_end - row_start + 1) * led_pitch, diffusion_height]);
-                }
-                // Bottom frame
-                if (row_start == 0) {
-                    translate([(col_start-0.5)*led_pitch - (col_start == 0 ? frame_width : 0), -led_pitch/2 - frame_width, 0])
-                    cube([(actual_col_end - col_start + 1) * led_pitch + (col_start == 0 ? frame_width : 0) + (actual_col_end == cols - 1 ? frame_width : 0), frame_width, diffusion_height]);
-                }
-                // Top frame
-                if (actual_row_end == rows - 1) {
-                    translate([(col_start-0.5)*led_pitch - (col_start == 0 ? frame_width : 0), (actual_row_end+0.5)*led_pitch, 0])
-                    cube([(actual_col_end - col_start + 1) * led_pitch + (col_start == 0 ? frame_width : 0) + (actual_col_end == cols - 1 ? frame_width : 0), frame_width, diffusion_height]);
+                if (frame_radius > 0) {
+                    // Rounded frame
+                    difference() {
+                        hull() {
+                            translate([x_min + frame_radius, y_min + frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
+                            translate([x_max - frame_radius, y_min + frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
+                            translate([x_min + frame_radius, y_max - frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
+                            translate([x_max - frame_radius, y_max - frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
+                        }
+                        // Subtract interior
+                        translate([x_min + frame_width, y_min + frame_width, -1])
+                        cube([x_max - x_min - 2*frame_width, y_max - y_min - 2*frame_width, diffusion_height + 2]);
+                    }
+                } else {
+                    // Left frame
+                    if (col_start == 0) {
+                        translate([x_min, y_min, 0])
+                        cube([frame_width, y_max - y_min, diffusion_height]);
+                    }
+                    // Right frame
+                    if (actual_col_end == cols - 1) {
+                        translate([x_max - frame_width, y_min, 0])
+                        cube([frame_width, y_max - y_min, diffusion_height]);
+                    }
+                    // Bottom frame
+                    if (row_start == 0) {
+                        translate([x_min, y_min, 0])
+                        cube([x_max - x_min, frame_width, diffusion_height]);
+                    }
+                    // Top frame
+                    if (actual_row_end == rows - 1) {
+                        translate([x_min, y_max - frame_width, 0])
+                        cube([x_max - x_min, frame_width, diffusion_height]);
+                    }
                 }
             }
 
@@ -178,19 +188,170 @@ module matrix_layout() {
                 tab_size = magnets_enabled ? max(mounting_hole_dia * 2, magnet_dia + 2) : mounting_hole_dia * 2;
                 // Corners
                 if (col_start == 0 && row_start == 0) {
-                    translate([-led_pitch/2 - frame_width, -led_pitch/2 - frame_width, 0])
+                    translate([x_min, y_min, 0])
                     cylinder(d=tab_size, h=diffusion_height, $fn=32);
                 }
                 if (actual_col_end == cols - 1 && row_start == 0) {
-                    translate([(cols-1)*led_pitch + led_pitch/2 + frame_width, -led_pitch/2 - frame_width, 0])
+                    translate([x_max, y_min, 0])
                     cylinder(d=tab_size, h=diffusion_height, $fn=32);
                 }
                 if (col_start == 0 && actual_row_end == rows - 1) {
-                    translate([-led_pitch/2 - frame_width, (rows-1)*led_pitch + led_pitch/2 + frame_width, 0])
+                    translate([x_min, y_max, 0])
                     cylinder(d=tab_size, h=diffusion_height, $fn=32);
                 }
                 if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
-                    translate([(cols-1)*led_pitch + led_pitch/2 + frame_width, (rows-1)*led_pitch + led_pitch/2 + frame_width, 0])
+                    translate([x_max, y_max, 0])
+                    cylinder(d=tab_size, h=diffusion_height, $fn=32);
+                }
+            }
+
+            for (r = [row_start : actual_row_end]) {
+                x_offset = (r % 2 == 0) ? 0 : led_pitch / 2;
+                for (c = [col_start : actual_col_end]) {
+                    translate([c * led_pitch + x_offset, r * row_dist, diffusion_height/2])
+                    cell();
+                }
+            }
+        }
+
+        // Mounting holes
+        if (mounting_holes_enabled && frame_enabled) {
+            // Corners
+            if (col_start == 0 && row_start == 0) {
+                translate([x_min, y_min, -1])
+                cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
+            }
+            if (actual_col_end == cols - 1 && row_start == 0) {
+                translate([x_max, y_min, -1])
+                cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
+            }
+            if (col_start == 0 && actual_row_end == rows - 1) {
+                translate([x_min, y_max, -1])
+                cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
+            }
+            if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
+                translate([x_max, y_max, -1])
+                cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
+            }
+        }
+
+        // Frame Labeling
+        if (label_text != "" && frame_enabled) {
+            // Place on bottom frame by default
+            translate([(x_max+x_min)/2, y_min + frame_width/2, diffusion_height - label_depth])
+            linear_extrude(height = label_depth + 0.1)
+            text(label_text, size = label_size, halign = "center", valign = "center");
+        }
+
+        // Magnet recesses
+        if (magnets_enabled && mounting_holes_enabled && frame_enabled) {
+            // Corners
+            if (col_start == 0 && row_start == 0) {
+                translate([x_min, y_min, -0.1])
+                cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
+            }
+            if (actual_col_end == cols - 1 && row_start == 0) {
+                translate([x_max, y_min, -0.1])
+                cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
+            }
+            if (col_start == 0 && actual_row_end == rows - 1) {
+                translate([x_min, y_max, -0.1])
+                cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
+            }
+            if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
+                translate([x_max, y_max, -0.1])
+                cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
+            }
+        }
+
+
+        // Cable cutout
+        if (cutout_enabled) {
+            if (cutout_side == "bottom" && row_start == 0) {
+                translate([(x_max+x_min)/2, y_min + frame_width/2, cutout_depth/2 - 0.1])
+                cube([cutout_width, frame_width + 2, cutout_depth + 0.2], center=true);
+            } else if (cutout_side == "top" && actual_row_end == rows - 1) {
+                translate([(x_max+x_min)/2, y_max - frame_width/2, cutout_depth/2 - 0.1])
+                cube([cutout_width, frame_width + 2, cutout_depth + 0.2], center=true);
+            } else if (cutout_side == "left" && col_start == 0) {
+                translate([x_min + frame_width/2, (y_max+y_min)/2, cutout_depth/2 - 0.1])
+                cube([frame_width + 2, cutout_width, cutout_depth + 0.2], center=true);
+            } else if (cutout_side == "right" && actual_col_end == cols - 1) {
+                translate([x_max - frame_width/2, (y_max+y_min)/2, cutout_depth/2 - 0.1])
+                cube([frame_width + 2, cutout_width, cutout_depth + 0.2], center=true);
+            }
+        }
+    }
+}
+
+module matrix_layout() {
+    actual_row_end = (row_end == -1) ? rows - 1 : row_end;
+    actual_col_end = (col_end == -1) ? cols - 1 : col_end;
+
+    x_min = (col_start - 0.5) * led_pitch - frame_width;
+    x_max = (actual_col_end + 0.5) * led_pitch + frame_width;
+    y_min = (row_start - 0.5) * led_pitch - frame_width;
+    y_max = (actual_row_end + 0.5) * led_pitch + frame_width;
+
+    difference() {
+        union() {
+            // Optional frame
+            if (frame_enabled) {
+                if (frame_radius > 0) {
+                    // Rounded frame
+                    difference() {
+                        hull() {
+                            translate([x_min + frame_radius, y_min + frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
+                            translate([x_max - frame_radius, y_min + frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
+                            translate([x_min + frame_radius, y_max - frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
+                            translate([x_max - frame_radius, y_max - frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
+                        }
+                        // Subtract interior
+                        translate([x_min + frame_width, y_min + frame_width, -1])
+                        cube([x_max - x_min - 2*frame_width, y_max - y_min - 2*frame_width, diffusion_height + 2]);
+                    }
+                } else {
+                    // Left frame
+                    if (col_start == 0) {
+                        translate([x_min, y_min, 0])
+                        cube([frame_width, y_max - y_min, diffusion_height]);
+                    }
+                    // Right frame
+                    if (actual_col_end == cols - 1) {
+                        translate([x_max - frame_width, y_min, 0])
+                        cube([frame_width, y_max - y_min, diffusion_height]);
+                    }
+                    // Bottom frame
+                    if (row_start == 0) {
+                        translate([x_min, y_min, 0])
+                        cube([x_max - x_min, frame_width, diffusion_height]);
+                    }
+                    // Top frame
+                    if (actual_row_end == rows - 1) {
+                        translate([x_min, y_max - frame_width, 0])
+                        cube([x_max - x_min, frame_width, diffusion_height]);
+                    }
+                }
+            }
+
+            // Mounting tabs
+            if (mounting_holes_enabled && frame_enabled) {
+                tab_size = magnets_enabled ? max(mounting_hole_dia * 2, magnet_dia + 2) : mounting_hole_dia * 2;
+                // Corners
+                if (col_start == 0 && row_start == 0) {
+                    translate([x_min, y_min, 0])
+                    cylinder(d=tab_size, h=diffusion_height, $fn=32);
+                }
+                if (actual_col_end == cols - 1 && row_start == 0) {
+                    translate([x_max, y_min, 0])
+                    cylinder(d=tab_size, h=diffusion_height, $fn=32);
+                }
+                if (col_start == 0 && actual_row_end == rows - 1) {
+                    translate([x_min, y_max, 0])
+                    cylinder(d=tab_size, h=diffusion_height, $fn=32);
+                }
+                if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
+                    translate([x_max, y_max, 0])
                     cylinder(d=tab_size, h=diffusion_height, $fn=32);
                 }
             }
@@ -207,40 +368,48 @@ module matrix_layout() {
         if (mounting_holes_enabled && frame_enabled) {
             // Corners
             if (col_start == 0 && row_start == 0) {
-                translate([-led_pitch/2 - frame_width, -led_pitch/2 - frame_width, -1])
+                translate([x_min, y_min, -1])
                 cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
             }
             if (actual_col_end == cols - 1 && row_start == 0) {
-                translate([(cols-1)*led_pitch + led_pitch/2 + frame_width, -led_pitch/2 - frame_width, -1])
+                translate([x_max, y_min, -1])
                 cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
             }
             if (col_start == 0 && actual_row_end == rows - 1) {
-                translate([-led_pitch/2 - frame_width, (rows-1)*led_pitch + led_pitch/2 + frame_width, -1])
+                translate([x_min, y_max, -1])
                 cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
             }
             if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
-                translate([(cols-1)*led_pitch + led_pitch/2 + frame_width, (rows-1)*led_pitch + led_pitch/2 + frame_width, -1])
+                translate([x_max, y_max, -1])
                 cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
             }
+        }
+
+        // Frame Labeling
+        if (label_text != "" && frame_enabled) {
+            // Place on bottom frame by default
+            translate([(x_max+x_min)/2, y_min + frame_width/2, diffusion_height - label_depth])
+            linear_extrude(height = label_depth + 0.1)
+            text(label_text, size = label_size, halign = "center", valign = "center");
         }
 
         // Magnet recesses
         if (magnets_enabled && mounting_holes_enabled && frame_enabled) {
             // Corners
             if (col_start == 0 && row_start == 0) {
-                translate([-led_pitch/2 - frame_width, -led_pitch/2 - frame_width, -0.1])
+                translate([x_min, y_min, -0.1])
                 cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
             }
             if (actual_col_end == cols - 1 && row_start == 0) {
-                translate([(cols-1)*led_pitch + led_pitch/2 + frame_width, -led_pitch/2 - frame_width, -0.1])
+                translate([x_max, y_min, -0.1])
                 cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
             }
             if (col_start == 0 && actual_row_end == rows - 1) {
-                translate([-led_pitch/2 - frame_width, (rows-1)*led_pitch + led_pitch/2 + frame_width, -0.1])
+                translate([x_min, y_max, -0.1])
                 cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
             }
             if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
-                translate([(cols-1)*led_pitch + led_pitch/2 + frame_width, (rows-1)*led_pitch + led_pitch/2 + frame_width, -0.1])
+                translate([x_max, y_max, -0.1])
                 cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
             }
         }
@@ -248,16 +417,16 @@ module matrix_layout() {
         // Cable cutout
         if (cutout_enabled) {
             if (cutout_side == "bottom" && row_start == 0) {
-                translate([(cols-1)*led_pitch/2, -led_pitch/2 - frame_width/2, cutout_depth/2 - 0.1])
+                translate([(x_max+x_min)/2, y_min + frame_width/2, cutout_depth/2 - 0.1])
                 cube([cutout_width, frame_width + 2, cutout_depth + 0.2], center=true);
             } else if (cutout_side == "top" && actual_row_end == rows - 1) {
-                translate([(cols-1)*led_pitch/2, (rows-1)*led_pitch + led_pitch/2 + frame_width/2, cutout_depth/2 - 0.1])
+                translate([(x_max+x_min)/2, y_max - frame_width/2, cutout_depth/2 - 0.1])
                 cube([cutout_width, frame_width + 2, cutout_depth + 0.2], center=true);
             } else if (cutout_side == "left" && col_start == 0) {
-                translate([-led_pitch/2 - frame_width/2, (rows-1)*led_pitch/2, cutout_depth/2 - 0.1])
+                translate([x_min + frame_width/2, (y_max+y_min)/2, cutout_depth/2 - 0.1])
                 cube([frame_width + 2, cutout_width, cutout_depth + 0.2], center=true);
             } else if (cutout_side == "right" && actual_col_end == cols - 1) {
-                translate([(cols-1)*led_pitch + led_pitch/2 + frame_width/2, (rows-1)*led_pitch/2, cutout_depth/2 - 0.1])
+                translate([x_max - frame_width/2, (y_max+y_min)/2, cutout_depth/2 - 0.1])
                 cube([frame_width + 2, cutout_width, cutout_depth + 0.2], center=true);
             }
         }

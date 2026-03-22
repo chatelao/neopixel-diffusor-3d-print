@@ -70,5 +70,18 @@
         "mounting_holes_enabled": true,
         "magnets_enabled": true,
         "cap_clearance_enabled": true
+    },
+    "hex_full_features": {
+        "led_pitch": 10,
+        "rows": 8,
+        "cols": 8,
+        "type": "hex_matrix",
+        "cell_shape": "hexagonal",
+        "frame_enabled": true,
+        "frame_radius": 4,
+        "mounting_holes_enabled": true,
+        "magnets_enabled": true,
+        "label_text": "HEX-8x8",
+        "label_size": 4
     }
 }
