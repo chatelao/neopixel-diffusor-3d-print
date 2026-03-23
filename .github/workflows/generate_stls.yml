@@ -31,7 +31,7 @@ jobs:
     - name: Generate STLs and Renderings
       run: |
         mkdir -p stl images
-        python3 scripts/generate_stl.py --multi
+        python3 scripts/generate_stl.py
 
     - name: Sync STLs to docs
       run: |
