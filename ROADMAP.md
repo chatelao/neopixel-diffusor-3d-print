@@ -45,3 +45,4 @@ Diese Roadmap beschreibt die 30 Schritte zur Umsetzung eines parametrierbaren Ge
 - [x] 35. **Hex-Matrix Rahmen & Montage:** Erweiterung des Hex-Matrix-Layouts um Rahmen, Montagebohrungen und Magnete.
 - [x] 36. **Abgerundete Rahmenecken:** Implementierung optionaler Radien für die Rahmenecken zur besseren Haptik.
 - [x] 37. **Rahmen-Beschriftung:** Unterstützung für Textprägungen auf dem Rahmen zur Identifikation.
+- [x] 38. **Mehrfache Diffusor-Versionen:** Unterstützung für drei Versionen (Standard, 0.7mm Schicht, separater 1.0mm Deckel) pro Panel.
