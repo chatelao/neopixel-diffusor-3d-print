@@ -48,8 +48,8 @@ def config_to_params(config):
 def run_openscad(params, stl_file, png_file, generate_png=True):
     scad_file = "src/diffuser.scad"
 
-    # Base command for STL
-    stl_cmd = ["openscad", "-o", stl_file]
+    # Base command for STL (using binary format for efficiency)
+    stl_cmd = ["openscad", "-o", stl_file, "--export-format", "binstl"]
     stl_cmd.extend(params)
     stl_cmd.append(scad_file)
 
