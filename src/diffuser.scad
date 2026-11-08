@@ -70,7 +70,7 @@ module cell() {
     difference() {
         union() {
             if (part == "all") {
-                // Outer boundary of the cell
+                // Outer boundary of the cell (full height)
                 if (type == "hex_matrix") {
                     rotate([0, 0, 30])
                     cylinder(d=led_pitch / cos(30), h=diffusion_height, center=true, $fn=6);
@@ -78,16 +78,17 @@ module cell() {
                     cube([led_pitch, led_pitch, diffusion_height], center=true);
                 }
             } else if (part == "body") {
-                // Outer boundary minus the inset for the lid
+                // Outer boundary of the cell above the recessed lid layer (z = bottom_thickness .. diffusion_height)
+                translate([0, 0, bottom_thickness/2])
                 if (type == "hex_matrix") {
                     rotate([0, 0, 30])
-                    cylinder(d=led_pitch / cos(30), h=diffusion_height, center=true, $fn=6);
+                    cylinder(d=led_pitch / cos(30), h=h, center=true, $fn=6);
                 } else {
-                    cube([led_pitch, led_pitch, diffusion_height], center=true);
+                    cube([led_pitch, led_pitch, h], center=true);
                 }
             }
             // "diffuser" part as individual cells is handled differently in layouts for Version 3 (single lid)
-            // but we keep this for backward compatibility with multi-material (Version 1 style)
+            // but we keep this for backward compatibility with single-cell fallback
             if (part == "diffuser") {
                 translate([0, 0, -diffusion_height/2 + bottom_thickness/2])
                 if (type == "hex_matrix") {
@@ -111,9 +112,9 @@ module cell() {
             }
 
             // Inner cavity (hollow part)
-            // For "all", it stops at bottom_thickness. For "body", it goes all the way through the main part
-            cavity_h = (part == "all" ? h + 0.1 : h + 0.1);
-            z_offset = (part == "all" ? bottom_thickness/2 + 0.05 : bottom_thickness/2 + 0.05);
+            // For "all", it stops at bottom_thickness. For "body", it goes all the way through the cell walls
+            cavity_h = (part == "all" ? h + 0.1 : h + 0.2);
+            z_offset = (part == "all" ? bottom_thickness/2 + 0.05 : bottom_thickness/2);
 
             translate([0, 0, z_offset]) {
                 if (cell_shape == "circular") {
@@ -130,17 +131,6 @@ module cell() {
                     }
                 }
             }
-
-            // For "body", we also subtract the entire top layer to make room for the lid
-            if (part == "body") {
-                translate([0, 0, -diffusion_height/2 + bottom_thickness/2])
-                if (type == "hex_matrix") {
-                    rotate([0, 0, 30])
-                    cylinder(d=led_pitch / cos(30) + 0.1, h=bottom_thickness + 0.1, center=true, $fn=6);
-                } else {
-                    cube([led_pitch + 0.1, led_pitch + 0.1, bottom_thickness + 0.1], center=true);
-                }
-            }
         }
     }
 }
@@ -148,6 +138,7 @@ module cell() {
 module hex_matrix_layout() {
     actual_row_end = (row_end == -1) ? rows - 1 : row_end;
     actual_col_end = (col_end == -1) ? cols - 1 : col_end;
+    has_frame = frame_enabled || (part == "body");
 
     // Hexagonal packing math (flat-to-flat = led_pitch):
     // Horizontal distance = led_pitch
@@ -169,8 +160,8 @@ module hex_matrix_layout() {
 
     difference() {
         union() {
-            // Optional frame
-            if (frame_enabled && (part == "all" || part == "body")) {
+            // Outer frame (enabled explicitly or required to retain V3 lid in "body" mode)
+            if (has_frame && (part == "all" || part == "body")) {
                 if (frame_radius > 0) {
                     // Rounded frame
                     difference() {
@@ -338,6 +329,7 @@ module hex_matrix_layout() {
 module matrix_layout() {
     actual_row_end = (row_end == -1) ? rows - 1 : row_end;
     actual_col_end = (col_end == -1) ? cols - 1 : col_end;
+    has_frame = frame_enabled || (part == "body");
 
     x_min = (col_start - 0.5) * led_pitch - frame_width;
     x_max = (actual_col_end + 0.5) * led_pitch + frame_width;
@@ -352,8 +344,8 @@ module matrix_layout() {
 
     difference() {
         union() {
-            // Optional frame
-            if (frame_enabled && (part == "all" || part == "body")) {
+            // Outer frame (enabled explicitly or required to retain V3 lid in "body" mode)
+            if (has_frame && (part == "all" || part == "body")) {
                 if (frame_radius > 0) {
                     // Rounded frame
                     difference() {
@@ -371,22 +363,22 @@ module matrix_layout() {
                     // Left frame
                     if (col_start == 0) {
                         translate([x_min, y_min, 0])
-                        cube([frame_width, y_max - y_min, diffusion_height]);
+                        cube([frame_width + 0.01, y_max - y_min, diffusion_height]);
                     }
                     // Right frame
                     if (actual_col_end == cols - 1) {
-                        translate([x_max - frame_width, y_min, 0])
-                        cube([frame_width, y_max - y_min, diffusion_height]);
+                        translate([x_max - frame_width - 0.01, y_min, 0])
+                        cube([frame_width + 0.01, y_max - y_min, diffusion_height]);
                     }
                     // Bottom frame
                     if (row_start == 0) {
                         translate([x_min, y_min, 0])
-                        cube([x_max - x_min, frame_width, diffusion_height]);
+                        cube([x_max - x_min, frame_width + 0.01, diffusion_height]);
                     }
                     // Top frame
                     if (actual_row_end == rows - 1) {
-                        translate([x_min, y_max - frame_width, 0])
-                        cube([x_max - x_min, frame_width, diffusion_height]);
+                        translate([x_min, y_max - frame_width - 0.01, 0])
+                        cube([x_max - x_min, frame_width + 0.01, diffusion_height]);
                     }
                 }
             }
@@ -513,6 +505,9 @@ module ring_layout() {
     radius = (outer_diameter + inner_diameter) / 4;
     ring_width = (outer_diameter - inner_diameter) / 2;
     actual_outer = frame_enabled ? outer_diameter + 2*frame_width : outer_diameter;
+    // Recessed pocket bounds for Version 3 ring lid (retaining inner & outer walls at z=0)
+    recess_outer = frame_enabled ? outer_diameter : outer_diameter - 2*wall_thickness;
+    recess_inner = inner_diameter + 2*wall_thickness;
 
     difference() {
         union() {
@@ -520,11 +515,11 @@ module ring_layout() {
             if (part == "all" || part == "body") {
                 cylinder(d=actual_outer, h=diffusion_height, $fn=128);
             } else if (part == "diffuser") {
-                // Lid for the ring
+                // Lid for the ring (fits into the recessed annular pocket)
                 difference() {
-                    cylinder(d=outer_diameter - 2*lid_tolerance, h=bottom_thickness, $fn=128);
+                    cylinder(d=recess_outer - 2*lid_tolerance, h=bottom_thickness, $fn=128);
                     translate([0, 0, -1])
-                    cylinder(d=inner_diameter + 2*lid_tolerance, h=bottom_thickness + 2, $fn=128);
+                    cylinder(d=recess_inner + 2*lid_tolerance, h=bottom_thickness + 2, $fn=128);
                 }
             }
 
@@ -612,13 +607,13 @@ module ring_layout() {
             }
         }
 
-        // For Version 3 "body", also subtract the recessed ring for the lid
+        // For Version 3 "body", subtract the recessed annular pocket for the lid while preserving inner and outer walls at z=0
         if (part == "body") {
             translate([0, 0, -0.1])
             difference() {
-                cylinder(d=outer_diameter + 0.1, h=bottom_thickness + 0.1, $fn=128);
+                cylinder(d=recess_outer, h=bottom_thickness + 0.1, $fn=128);
                 translate([0, 0, -0.1])
-                cylinder(d=inner_diameter - 0.1, h=bottom_thickness + 0.3, $fn=128);
+                cylinder(d=recess_inner, h=bottom_thickness + 0.3, $fn=128);
             }
         }
     }

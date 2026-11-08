@@ -43,7 +43,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
     - Wrap mounting tabs, mounting holes, magnet recesses, cable cutouts, and frame labels in `if (part == "all" || part == "body")` across `matrix_layout()`, `hex_matrix_layout()`, and `ring_layout()`.
   - **Verification:** `diffuser_16x16_v3_lid.stl`, `diffuser_8x32_v3_lid.stl`, and `diffuser_ring_20_v3_lid.stl` contain only the `1.0mm` diffuser plate (`comps = 1`) with no `10mm` corner cylinders or perimeter cutout notches.
 
-- [ ] **6. Preserve Outer Retaining Walls on V3 Bodies (`part == "body"`) (Flaw 1.4.1)**
+- [x] **6. Preserve Outer Retaining Walls on V3 Bodies (`part == "body"`) (Flaw 1.4.1)**
   - **File:** `src/diffuser.scad` (lines 135–143, 607–614)
   - **Action:**
     - Instead of subtracting `led_pitch + 0.1` from each individual `cell()` at `z = 0..bottom_thickness` (which erases the entire bottom of frameless grids and cuts `0.05mm` too deep to `z = 1.05mm`), keep `cell()` walls extending to `z = 0` or subtract a single interior recess at the layout level inset by `wall_thickness` (or require/auto-enable an outer perimeter wall for `part == "body"`).
