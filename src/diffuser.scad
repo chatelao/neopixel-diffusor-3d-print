@@ -593,12 +593,12 @@ module ring_layout() {
                     }
                 }
 
-                // Capacitor clearance for ring
+                // Capacitor clearance for ring (on the LED/PCB side at +Z, preserving inner/outer ring walls)
                 if (cap_clearance_enabled) {
                     // We place cutouts between LEDs along the ring path
                     rotate([0, 0, angle + 180/num_leds])
-                    translate([radius, 0, cap_clearance_height/2])
-                    cube([ring_width + 2, cap_clearance_width, cap_clearance_height + 0.1], center=true);
+                    translate([radius, 0, diffusion_height - cap_clearance_height/2 + 0.05])
+                    cube([max(1.0, ring_width - 2*wall_thickness), cap_clearance_width, cap_clearance_height + 0.1], center=true);
                 }
             }
         }

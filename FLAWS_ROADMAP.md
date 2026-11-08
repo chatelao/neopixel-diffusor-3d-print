@@ -14,7 +14,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
     - Restrict the cutout length along the wall (e.g., `cap_clearance_length = min(led_pitch * 0.5, 4.0)`) instead of `led_pitch + 0.1` so the walls remain structurally connected around cell corners.
   - **Verification:** `diffuser_16x16_v1.stl`, `diffuser_8x32_v1.stl`, and `diffuser_16x32_v1.stl` export as a single connected mesh (`comps = 1`) with all internal walls resting flat on `z = 0` (or `z = bottom_thickness`).
 
-- [ ] **2. Fix Ring Capacitor Clearance in `ring_layout()` (Flaw 1.2)**
+- [x] **2. Fix Ring Capacitor Clearance in `ring_layout()` (Flaw 1.2)**
   - **File:** `src/diffuser.scad` (lines 597–602)
   - **Action:**
     - Move the ring capacitor cutout Z-center from `cap_clearance_height/2` to `diffusion_height - cap_clearance_height/2 + 0.05`.
