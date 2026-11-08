@@ -135,7 +135,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
     - Fix the footer GitHub link to `https://github.com/chatelao/neopixel-diffusor-3d-print`.
     - Add support in the web UI to browse all panels and versions (`v1`, `v2`, `v3_body`, `v3_lid`).
 
-- [ ] **18. Integrate `verify_stls.py` into GitHub Actions Workflow (`.github/workflows/generate_stls.yml`) (Flaw 2.1)**
+- [x] **18. Integrate `verify_stls.py` into GitHub Actions Workflow (`.github/workflows/generate_stls.yml`) (Flaw 2.1)**
   - **File:** `.github/workflows/generate_stls.yml` (lines 21–40)
   - **Action:**
     - Install `admesh` in the `Install OpenSCAD and dependencies` step (`sudo apt-get install openscad xvfb admesh -y`).
