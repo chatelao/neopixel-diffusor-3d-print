@@ -175,8 +175,10 @@ module hex_matrix_layout() {
         union() {
             // Outer frame (enabled explicitly or required to retain V3 lid in "body" mode)
             if (has_frame && (part == "all" || part == "body")) {
-                if (frame_radius > 0) {
-                    // Rounded outer frame
+                is_full_panel = (col_start == 0 && actual_col_end == cols - 1 && row_start == 0 && actual_row_end == rows - 1);
+                if (frame_radius > 0 && (is_full_panel || part == "body")) {
+                    // Rounded outer frame with matching rounded interior cutout
+                    inner_r = max(0.01, frame_radius - frame_width);
                     difference() {
                         hull() {
                             translate([x_min + frame_radius, y_min + frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
@@ -184,28 +186,33 @@ module hex_matrix_layout() {
                             translate([x_min + frame_radius, y_max - frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
                             translate([x_max - frame_radius, y_max - frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
                         }
-                        // Subtract interior
-                        translate([inner_x_min, inner_y_min, -1])
-                        cube([inner_x_max - inner_x_min, inner_y_max - inner_y_min, diffusion_height + 2]);
+                        // Subtract rounded interior (with 0.01mm overlap into inner grid)
+                        translate([0, 0, -1])
+                        hull() {
+                            translate([inner_x_min + inner_r + 0.01, inner_y_min + inner_r + 0.01, 0]) cylinder(r=inner_r, h=diffusion_height + 2, $fn=32);
+                            translate([inner_x_max - inner_r - 0.01, inner_y_min + inner_r + 0.01, 0]) cylinder(r=inner_r, h=diffusion_height + 2, $fn=32);
+                            translate([inner_x_min + inner_r + 0.01, inner_y_max - inner_r - 0.01, 0]) cylinder(r=inner_r, h=diffusion_height + 2, $fn=32);
+                            translate([inner_x_max - inner_r - 0.01, inner_y_max - inner_r - 0.01, 0]) cylinder(r=inner_r, h=diffusion_height + 2, $fn=32);
+                        }
                     }
                 } else {
                     // Left frame
-                    if (col_start == 0) {
+                    if (col_start == 0 || part == "body") {
                         translate([x_min, y_min, 0])
                         cube([frame_width + 0.01, y_max - y_min, diffusion_height]);
                     }
                     // Right frame
-                    if (actual_col_end == cols - 1) {
+                    if (actual_col_end == cols - 1 || part == "body") {
                         translate([x_max - frame_width - 0.01, y_min, 0])
                         cube([frame_width + 0.01, y_max - y_min, diffusion_height]);
                     }
                     // Bottom frame
-                    if (row_start == 0) {
+                    if (row_start == 0 || part == "body") {
                         translate([x_min, y_min, 0])
                         cube([x_max - x_min, frame_width + 0.01, diffusion_height]);
                     }
                     // Top frame
-                    if (actual_row_end == rows - 1) {
+                    if (actual_row_end == rows - 1 || part == "body") {
                         translate([x_min, y_max - frame_width - 0.01, 0])
                         cube([x_max - x_min, frame_width + 0.01, diffusion_height]);
                     }
@@ -359,23 +366,30 @@ module matrix_layout() {
     actual_col_end = (col_end == -1) ? cols - 1 : col_end;
     has_frame = frame_enabled || (part == "body");
 
-    x_min = (col_start - 0.5) * led_pitch - frame_width;
-    x_max = (actual_col_end + 0.5) * led_pitch + frame_width;
-    y_min = (row_start - 0.5) * led_pitch - frame_width;
-    y_max = (actual_row_end + 0.5) * led_pitch + frame_width;
+    inner_x_min = (col_start - 0.5) * led_pitch;
+    inner_x_max = (actual_col_end + 0.5) * led_pitch;
+    inner_y_min = (row_start - 0.5) * led_pitch;
+    inner_y_max = (actual_row_end + 0.5) * led_pitch;
+
+    x_min = inner_x_min - frame_width;
+    x_max = inner_x_max + frame_width;
+    y_min = inner_y_min - frame_width;
+    y_max = inner_y_max + frame_width;
 
     // Interior bounds for the lid
-    lx_min = (col_start - 0.5) * led_pitch + lid_tolerance;
-    lx_max = (actual_col_end + 0.5) * led_pitch - lid_tolerance;
-    ly_min = (row_start - 0.5) * led_pitch + lid_tolerance;
-    ly_max = (actual_row_end + 0.5) * led_pitch - lid_tolerance;
+    lx_min = inner_x_min + lid_tolerance;
+    lx_max = inner_x_max - lid_tolerance;
+    ly_min = inner_y_min + lid_tolerance;
+    ly_max = inner_y_max - lid_tolerance;
 
     difference() {
         union() {
             // Outer frame (enabled explicitly or required to retain V3 lid in "body" mode)
             if (has_frame && (part == "all" || part == "body")) {
-                if (frame_radius > 0) {
-                    // Rounded frame
+                is_full_panel = (col_start == 0 && actual_col_end == cols - 1 && row_start == 0 && actual_row_end == rows - 1);
+                if (frame_radius > 0 && (is_full_panel || part == "body")) {
+                    // Rounded outer frame with matching rounded interior cutout
+                    inner_r = max(0.01, frame_radius - frame_width);
                     difference() {
                         hull() {
                             translate([x_min + frame_radius, y_min + frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
@@ -383,28 +397,33 @@ module matrix_layout() {
                             translate([x_min + frame_radius, y_max - frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
                             translate([x_max - frame_radius, y_max - frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
                         }
-                        // Subtract interior
-                        translate([x_min + frame_width, y_min + frame_width, -1])
-                        cube([x_max - x_min - 2*frame_width, y_max - y_min - 2*frame_width, diffusion_height + 2]);
+                        // Subtract rounded interior (with 0.01mm overlap into inner grid)
+                        translate([0, 0, -1])
+                        hull() {
+                            translate([inner_x_min + inner_r + 0.01, inner_y_min + inner_r + 0.01, 0]) cylinder(r=inner_r, h=diffusion_height + 2, $fn=32);
+                            translate([inner_x_max - inner_r - 0.01, inner_y_min + inner_r + 0.01, 0]) cylinder(r=inner_r, h=diffusion_height + 2, $fn=32);
+                            translate([inner_x_min + inner_r + 0.01, inner_y_max - inner_r - 0.01, 0]) cylinder(r=inner_r, h=diffusion_height + 2, $fn=32);
+                            translate([inner_x_max - inner_r - 0.01, inner_y_max - inner_r - 0.01, 0]) cylinder(r=inner_r, h=diffusion_height + 2, $fn=32);
+                        }
                     }
                 } else {
                     // Left frame
-                    if (col_start == 0) {
+                    if (col_start == 0 || part == "body") {
                         translate([x_min, y_min, 0])
                         cube([frame_width + 0.01, y_max - y_min, diffusion_height]);
                     }
                     // Right frame
-                    if (actual_col_end == cols - 1) {
+                    if (actual_col_end == cols - 1 || part == "body") {
                         translate([x_max - frame_width - 0.01, y_min, 0])
                         cube([frame_width + 0.01, y_max - y_min, diffusion_height]);
                     }
                     // Bottom frame
-                    if (row_start == 0) {
+                    if (row_start == 0 || part == "body") {
                         translate([x_min, y_min, 0])
                         cube([x_max - x_min, frame_width + 0.01, diffusion_height]);
                     }
                     // Top frame
-                    if (actual_row_end == rows - 1) {
+                    if (actual_row_end == rows - 1 || part == "body") {
                         translate([x_min, y_max - frame_width - 0.01, 0])
                         cube([x_max - x_min, frame_width + 0.01, diffusion_height]);
                     }

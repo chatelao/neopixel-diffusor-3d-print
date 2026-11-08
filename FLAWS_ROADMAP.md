@@ -84,7 +84,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
     - When `type == "ring"` and `cell_shape == "circular"`, bound `exit_d` by `min(led_pitch, ring_width, PI * (outer_diameter + inner_diameter) / (2 * num_leds)) - wall_thickness + tolerance`.
     - Add support for `cell_shape == "hexagonal"` in `ring_layout()` and replace hardcoded `3.14159` with `PI`.
 
-- [ ] **12. Fix Rounded Frame Interior Cutout and Segmentation Handling (Flaw 1.7)**
+- [x] **12. Fix Rounded Frame Interior Cutout and Segmentation Handling (Flaw 1.7)**
   - **File:** `src/diffuser.scad` (lines 174–186, 354–366)
   - **Action:**
     - Replace the sharp interior `cube()` cutout inside `if (frame_radius > 0)` with a rounded `hull()` of 4 inner cylinders of radius `max(0.01, frame_radius - frame_width)`, preventing large `frame_radius` values from severing the frame corners.
