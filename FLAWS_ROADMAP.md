@@ -141,7 +141,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
     - Install `admesh` in the `Install OpenSCAD and dependencies` step (`sudo apt-get install openscad xvfb admesh -y`).
     - Add a `Verify STLs` step running `python3 scripts/verify_stls.py` after `generate_stl.py` so broken or non-manifold geometries fail CI immediately.
 
-- [ ] **19. Clean Up Root Scratch Files and Add `.gitignore` (Flaw 3.4)**
+- [x] **19. Clean Up Root Scratch Files and Add `.gitignore` (Flaw 3.4)**
   - **Files:** `.gitignore`, `test_body.png`, `test_lid.png`, `test_v1.png`
   - **Action:**
     - Create a `.gitignore` covering Python cache files (`__pycache__/`, `*.pyc`, `.venv/`), OS/editor files (`.DS_Store`, `*.swp`), and temporary test outputs (`test_*.png`, `test_*.stl`).
