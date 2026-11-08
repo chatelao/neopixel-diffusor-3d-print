@@ -69,38 +69,16 @@ module cell() {
 
     // Small overlap epsilon so adjacent cells in matrix/hex_matrix fuse into a 2-manifold solid
     cell_outer_pitch = led_pitch + 0.02;
+    outer_h = (part == "all") ? diffusion_height : ((part == "body") ? h : bottom_thickness);
+    outer_z = (part == "all") ? 0 : ((part == "body") ? bottom_thickness/2 : -diffusion_height/2 + bottom_thickness/2);
 
     difference() {
-        union() {
-            if (part == "all") {
-                // Outer boundary of the cell (full height)
-                if (type == "hex_matrix") {
-                    rotate([0, 0, 30])
-                    cylinder(d=cell_outer_pitch / cos(30), h=diffusion_height, center=true, $fn=6);
-                } else {
-                    cube([cell_outer_pitch, cell_outer_pitch, diffusion_height], center=true);
-                }
-            } else if (part == "body") {
-                // Outer boundary of the cell above the recessed lid layer (z = bottom_thickness .. diffusion_height)
-                translate([0, 0, bottom_thickness/2])
-                if (type == "hex_matrix") {
-                    rotate([0, 0, 30])
-                    cylinder(d=cell_outer_pitch / cos(30), h=h, center=true, $fn=6);
-                } else {
-                    cube([cell_outer_pitch, cell_outer_pitch, h], center=true);
-                }
-            }
-            // "diffuser" part as individual cells is handled differently in layouts for Version 3 (single lid)
-            // but we keep this for backward compatibility with single-cell fallback
-            if (part == "diffuser") {
-                translate([0, 0, -diffusion_height/2 + bottom_thickness/2])
-                if (type == "hex_matrix") {
-                    rotate([0, 0, 30])
-                    cylinder(d=cell_outer_pitch / cos(30), h=bottom_thickness, center=true, $fn=6);
-                } else {
-                    cube([cell_outer_pitch, cell_outer_pitch, bottom_thickness], center=true);
-                }
-            }
+        translate([0, 0, outer_z])
+        if (type == "hex_matrix") {
+            rotate([0, 0, 30])
+            cylinder(d=cell_outer_pitch / cos(30), h=outer_h, center=true, $fn=6);
+        } else {
+            cube([cell_outer_pitch, cell_outer_pitch, outer_h], center=true);
         }
 
         // Subtract the cavity from the body

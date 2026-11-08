@@ -90,7 +90,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
     - Replace the sharp interior `cube()` cutout inside `if (frame_radius > 0)` with a rounded `hull()` of 4 inner cylinders of radius `max(0.01, frame_radius - frame_width)`, preventing large `frame_radius` values from severing the frame corners.
     - Respect `col_start`, `actual_col_end`, `row_start`, and `actual_row_end` when `frame_radius > 0` on segmented matrices.
 
-- [ ] **13. Clean Up Dead and Duplicate Code in `cell()` (Flaw 1.8)**
+- [x] **13. Clean Up Dead and Duplicate Code in `cell()` (Flaw 1.8)**
   - **File:** `src/diffuser.scad` (lines 72–99, 115–116)
   - **Action:**
     - Merge the duplicate `if (part == "all")` and `else if (part == "body")` outer-boundary blocks in `cell()`.
