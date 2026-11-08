@@ -7,7 +7,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
 ## Phase 1: Fix Z-Orientation & Feature Placement in `src/diffuser.scad`
 *Goal: Ensure all PCB-facing cutouts and recesses are located on the LED/PCB side (`z = diffusion_height`) while keeping the optical diffusion layer on the build plate (`z = 0` to `bottom_thickness`) intact.*
 
-- [ ] **1. Fix Capacitor Clearance in `cell()` (Flaw 1.1)**
+- [x] **1. Fix Capacitor Clearance in `cell()` (Flaw 1.1)**
   - **File:** `src/diffuser.scad` (lines 105–111)
   - **Action:**
     - Move the capacitor clearance cutouts from the bottom diffuser face (`-diffusion_height/2 + cap_clearance_height/2`) to the top LED/PCB side (`+diffusion_height/2 - cap_clearance_height/2 + 0.05`).

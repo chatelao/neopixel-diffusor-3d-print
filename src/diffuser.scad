@@ -101,12 +101,12 @@ module cell() {
 
         // Subtract the cavity from the body
         if (part == "all" || part == "body") {
-            // Capacitor clearance
+            // Capacitor clearance (on the LED/PCB side at +Z, preserving cell corners)
             if (cap_clearance_enabled) {
                 for (a = [0, 90, 180, 270]) {
                     rotate([0, 0, a])
-                    translate([led_pitch/2, 0, -diffusion_height/2 + cap_clearance_height/2])
-                    cube([cap_clearance_width, led_pitch + 0.1, cap_clearance_height + 0.1], center=true);
+                    translate([led_pitch/2, 0, diffusion_height/2 - cap_clearance_height/2 + 0.05])
+                    cube([cap_clearance_width, led_pitch/2, cap_clearance_height + 0.1], center=true);
                 }
             }
 
