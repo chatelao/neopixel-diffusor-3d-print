@@ -147,7 +147,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
     - Create a `.gitignore` covering Python cache files (`__pycache__/`, `*.pyc`, `.venv/`), OS/editor files (`.DS_Store`, `*.swp`), and temporary test outputs (`test_*.png`, `test_*.stl`).
     - Remove committed scratch files `test_body.png`, `test_lid.png`, and `test_v1.png` from the repository root.
 
-- [ ] **20. Update `README.md` Parameter Table and Usage Documentation (Flaw 3.5)**
+- [x] **20. Update `README.md` Parameter Table and Usage Documentation (Flaw 3.5)**
   - **File:** `README.md` (lines 39–83)
   - **Action:**
     - Document all missing OpenSCAD parameters (`part`, `lid_tolerance`, `cap_clearance_enabled`, `cap_clearance_width`, `cap_clearance_height`, `row_start`, `row_end`, `col_start`, `col_end`).
