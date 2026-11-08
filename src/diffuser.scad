@@ -605,7 +605,7 @@ module ring_layout() {
 
         // Subtract cavities
         if (part == "all" || part == "body") {
-            arc_pitch = PI * (outer_diameter + inner_diameter) / (2 * num_leds);
+            chord_pitch = 2 * radius * sin(180 / num_leds);
             for (i = [0 : num_leds - 1]) {
                 angle = i * 360 / num_leds;
                 h = diffusion_height - bottom_thickness;
@@ -616,18 +616,20 @@ module ring_layout() {
                 rotate([0, 0, angle])
                 translate([radius, 0, z_pos])
                 if (cell_shape == "circular") {
-                    exit_d = min(led_pitch, min(ring_width, arc_pitch)) - wall_thickness + tolerance;
+                    exit_d = min(led_pitch, min(ring_width, chord_pitch)) - wall_thickness + tolerance;
                     entry_d = max(1.0, exit_d - delta);
                     cylinder(d1=exit_d, d2=entry_d, h=cavity_h, center=true, $fn=64);
                 } else if (cell_shape == "hexagonal") {
-                    exit_d = min(led_pitch, min(ring_width, arc_pitch)) - wall_thickness + tolerance;
+                    exit_d = min(led_pitch, min(ring_width, chord_pitch)) - wall_thickness + tolerance;
                     entry_d = max(1.0, exit_d - delta);
                     cylinder(d1=exit_d, d2=entry_d, h=cavity_h, center=true, $fn=6);
                 } else {
-                    // For square cells in a ring, we rotate them to align with the radius
-                    // Width is radial, height is tangential (arc-like)
+                    // For square cells in a ring, we rotate them to align with the radius.
+                    // Width is radial; tangential length is bounded by the chord at the inner cavity edge
+                    // so adjacent cavities never overlap and sever the inner ring wall.
                     w_exit = ring_width - wall_thickness + tolerance;
-                    l_exit = arc_pitch - wall_thickness + tolerance;
+                    inner_chord = 2 * (radius - w_exit / 2) * sin(180 / num_leds);
+                    l_exit = inner_chord - wall_thickness + tolerance;
                     w_entry = max(1.0, w_exit - delta);
                     l_entry = max(1.0, l_exit - delta);
 
