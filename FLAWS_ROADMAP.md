@@ -65,7 +65,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
 ## Phase 3: Fix Mounting, Hex-Matrix Math, Ring Cavities & Manifold Integrity
 *Goal: Eliminate cavity breaches, fix hexagonal bounding box math, and guarantee 100% 2-manifold watertight meshes.*
 
-- [ ] **9. Offset Mounting Tabs & Magnet Pockets Outside LED Cavities (Flaw 1.5)**
+- [x] **9. Offset Mounting Tabs & Magnet Pockets Outside LED Cavities (Flaw 1.5)**
   - **File:** `src/diffuser.scad` (lines 212–231, 266–313, 392–411, 437–484, 525–554)
   - **Action:**
     - In `ring_layout()`, position mounting tabs, holes, and magnet pockets radially outward at `actual_outer / 2 + tab_offset` (e.g., `actual_outer / 2 + max(mounting_hole_dia, magnets_enabled ? magnet_dia/2 : 0)`) so neither holes nor `6.1mm` magnet pockets intersect the ring's LED cavities.

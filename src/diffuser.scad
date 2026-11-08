@@ -202,21 +202,23 @@ module hex_matrix_layout() {
             // Mounting tabs
             if (mounting_holes_enabled && frame_enabled && (part == "all" || part == "body")) {
                 tab_size = magnets_enabled ? max(mounting_hole_dia * 2, magnet_dia + 2) : mounting_hole_dia * 2;
+                hole_or_magnet_r = max(mounting_hole_dia / 2, magnets_enabled ? magnet_dia / 2 : 0);
+                tab_offset = max(0, hole_or_magnet_r - frame_width);
                 // Corners
                 if (col_start == 0 && row_start == 0) {
-                    translate([x_min, y_min, 0])
+                    translate([x_min - tab_offset, y_min - tab_offset, 0])
                     cylinder(d=tab_size, h=diffusion_height, $fn=32);
                 }
                 if (actual_col_end == cols - 1 && row_start == 0) {
-                    translate([x_max, y_min, 0])
+                    translate([x_max + tab_offset, y_min - tab_offset, 0])
                     cylinder(d=tab_size, h=diffusion_height, $fn=32);
                 }
                 if (col_start == 0 && actual_row_end == rows - 1) {
-                    translate([x_min, y_max, 0])
+                    translate([x_min - tab_offset, y_max + tab_offset, 0])
                     cylinder(d=tab_size, h=diffusion_height, $fn=32);
                 }
                 if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
-                    translate([x_max, y_max, 0])
+                    translate([x_max + tab_offset, y_max + tab_offset, 0])
                     cylinder(d=tab_size, h=diffusion_height, $fn=32);
                 }
             }
@@ -248,23 +250,26 @@ module hex_matrix_layout() {
         }
 
         if (part == "all" || part == "body") {
+            hole_or_magnet_r = max(mounting_hole_dia / 2, magnets_enabled ? magnet_dia / 2 : 0);
+            tab_offset = max(0, hole_or_magnet_r - frame_width);
+
             // Mounting holes
             if (mounting_holes_enabled && frame_enabled) {
                 // Corners
                 if (col_start == 0 && row_start == 0) {
-                    translate([x_min, y_min, -1])
+                    translate([x_min - tab_offset, y_min - tab_offset, -1])
                     cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
                 }
                 if (actual_col_end == cols - 1 && row_start == 0) {
-                    translate([x_max, y_min, -1])
+                    translate([x_max + tab_offset, y_min - tab_offset, -1])
                     cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
                 }
                 if (col_start == 0 && actual_row_end == rows - 1) {
-                    translate([x_min, y_max, -1])
+                    translate([x_min - tab_offset, y_max + tab_offset, -1])
                     cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
                 }
                 if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
-                    translate([x_max, y_max, -1])
+                    translate([x_max + tab_offset, y_max + tab_offset, -1])
                     cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
                 }
             }
@@ -283,19 +288,19 @@ module hex_matrix_layout() {
             if (magnets_enabled && mounting_holes_enabled && frame_enabled) {
                 // Corners
                 if (col_start == 0 && row_start == 0) {
-                    translate([x_min, y_min, diffusion_height - magnet_depth])
+                    translate([x_min - tab_offset, y_min - tab_offset, diffusion_height - magnet_depth])
                     cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
                 }
                 if (actual_col_end == cols - 1 && row_start == 0) {
-                    translate([x_max, y_min, diffusion_height - magnet_depth])
+                    translate([x_max + tab_offset, y_min - tab_offset, diffusion_height - magnet_depth])
                     cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
                 }
                 if (col_start == 0 && actual_row_end == rows - 1) {
-                    translate([x_min, y_max, diffusion_height - magnet_depth])
+                    translate([x_min - tab_offset, y_max + tab_offset, diffusion_height - magnet_depth])
                     cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
                 }
                 if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
-                    translate([x_max, y_max, diffusion_height - magnet_depth])
+                    translate([x_max + tab_offset, y_max + tab_offset, diffusion_height - magnet_depth])
                     cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
                 }
             }
@@ -380,21 +385,23 @@ module matrix_layout() {
             // Mounting tabs
             if (mounting_holes_enabled && frame_enabled && (part == "all" || part == "body")) {
                 tab_size = magnets_enabled ? max(mounting_hole_dia * 2, magnet_dia + 2) : mounting_hole_dia * 2;
+                hole_or_magnet_r = max(mounting_hole_dia / 2, magnets_enabled ? magnet_dia / 2 : 0);
+                tab_offset = max(0, hole_or_magnet_r - frame_width);
                 // Corners
                 if (col_start == 0 && row_start == 0) {
-                    translate([x_min, y_min, 0])
+                    translate([x_min - tab_offset, y_min - tab_offset, 0])
                     cylinder(d=tab_size, h=diffusion_height, $fn=32);
                 }
                 if (actual_col_end == cols - 1 && row_start == 0) {
-                    translate([x_max, y_min, 0])
+                    translate([x_max + tab_offset, y_min - tab_offset, 0])
                     cylinder(d=tab_size, h=diffusion_height, $fn=32);
                 }
                 if (col_start == 0 && actual_row_end == rows - 1) {
-                    translate([x_min, y_max, 0])
+                    translate([x_min - tab_offset, y_max + tab_offset, 0])
                     cylinder(d=tab_size, h=diffusion_height, $fn=32);
                 }
                 if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
-                    translate([x_max, y_max, 0])
+                    translate([x_max + tab_offset, y_max + tab_offset, 0])
                     cylinder(d=tab_size, h=diffusion_height, $fn=32);
                 }
             }
@@ -425,23 +432,26 @@ module matrix_layout() {
         }
 
         if (part == "all" || part == "body") {
+            hole_or_magnet_r = max(mounting_hole_dia / 2, magnets_enabled ? magnet_dia / 2 : 0);
+            tab_offset = max(0, hole_or_magnet_r - frame_width);
+
             // Mounting holes
             if (mounting_holes_enabled && frame_enabled) {
                 // Corners
                 if (col_start == 0 && row_start == 0) {
-                    translate([x_min, y_min, -1])
+                    translate([x_min - tab_offset, y_min - tab_offset, -1])
                     cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
                 }
                 if (actual_col_end == cols - 1 && row_start == 0) {
-                    translate([x_max, y_min, -1])
+                    translate([x_max + tab_offset, y_min - tab_offset, -1])
                     cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
                 }
                 if (col_start == 0 && actual_row_end == rows - 1) {
-                    translate([x_min, y_max, -1])
+                    translate([x_min - tab_offset, y_max + tab_offset, -1])
                     cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
                 }
                 if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
-                    translate([x_max, y_max, -1])
+                    translate([x_max + tab_offset, y_max + tab_offset, -1])
                     cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
                 }
             }
@@ -460,19 +470,19 @@ module matrix_layout() {
             if (magnets_enabled && mounting_holes_enabled && frame_enabled) {
                 // Corners
                 if (col_start == 0 && row_start == 0) {
-                    translate([x_min, y_min, diffusion_height - magnet_depth])
+                    translate([x_min - tab_offset, y_min - tab_offset, diffusion_height - magnet_depth])
                     cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
                 }
                 if (actual_col_end == cols - 1 && row_start == 0) {
-                    translate([x_max, y_min, diffusion_height - magnet_depth])
+                    translate([x_max + tab_offset, y_min - tab_offset, diffusion_height - magnet_depth])
                     cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
                 }
                 if (col_start == 0 && actual_row_end == rows - 1) {
-                    translate([x_min, y_max, diffusion_height - magnet_depth])
+                    translate([x_min - tab_offset, y_max + tab_offset, diffusion_height - magnet_depth])
                     cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
                 }
                 if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
-                    translate([x_max, y_max, diffusion_height - magnet_depth])
+                    translate([x_max + tab_offset, y_max + tab_offset, diffusion_height - magnet_depth])
                     cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
                 }
             }
@@ -504,6 +514,9 @@ module ring_layout() {
     // Recessed pocket bounds for Version 3 ring lid (retaining inner & outer walls at z=0)
     recess_outer = frame_enabled ? outer_diameter : outer_diameter - 2*wall_thickness;
     recess_inner = inner_diameter + 2*wall_thickness;
+    // Offset mounting tabs outward so holes and magnets never cut into LED cavities
+    hole_or_magnet_r = max(mounting_hole_dia / 2, magnets_enabled ? magnet_dia / 2 : 0);
+    tab_r = actual_outer / 2 + hole_or_magnet_r;
 
     difference() {
         union() {
@@ -524,7 +537,7 @@ module ring_layout() {
                 tab_size = magnets_enabled ? max(mounting_hole_dia * 2, magnet_dia + 2) : mounting_hole_dia * 2;
                 for (a = [0, 90, 180, 270]) {
                     rotate([0, 0, a])
-                    translate([actual_outer/2, 0, 0])
+                    translate([tab_r, 0, 0])
                     cylinder(d=tab_size, h=diffusion_height, $fn=32);
                 }
             }
@@ -538,7 +551,7 @@ module ring_layout() {
             if (mounting_holes_enabled) {
                 for (a = [0, 90, 180, 270]) {
                     rotate([0, 0, a])
-                    translate([actual_outer/2, 0, -1])
+                    translate([tab_r, 0, -1])
                     cylinder(d=mounting_hole_dia, h=diffusion_height + 2, $fn=32);
                 }
             }
@@ -547,7 +560,7 @@ module ring_layout() {
             if (magnets_enabled && mounting_holes_enabled) {
                 for (a = [0, 90, 180, 270]) {
                     rotate([0, 0, a])
-                    translate([actual_outer/2, 0, diffusion_height - magnet_depth])
+                    translate([tab_r, 0, diffusion_height - magnet_depth])
                     cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
                 }
             }
