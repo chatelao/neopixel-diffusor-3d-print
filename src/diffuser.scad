@@ -123,14 +123,16 @@ module cell() {
                 if (cell_shape == "circular") {
                     cylinder(d1=exit_dim, d2=entry_dim, h=cavity_h, center=true, $fn=64);
                 } else if (cell_shape == "hexagonal") {
+                    hex_scale = (type == "hex_matrix") ? (1 / cos(30)) : 1.0;
                     rotate([0, 0, 30])
-                    cylinder(d1=exit_dim/cos(30), d2=entry_dim/cos(30), h=cavity_h, center=true, $fn=6);
+                    cylinder(d1=exit_dim * hex_scale, d2=entry_dim * hex_scale, h=cavity_h, center=true, $fn=6);
                 } else {
+                    sq_scale = (type == "hex_matrix") ? (1 / (cos(30) + sin(30))) : 1.0;
                     hull() {
                         translate([0, 0, -cavity_h/2])
-                        cube([exit_dim, exit_dim, 0.01], center=true);
+                        cube([exit_dim * sq_scale, exit_dim * sq_scale, 0.01], center=true);
                         translate([0, 0, cavity_h/2])
-                        cube([entry_dim, entry_dim, 0.01], center=true);
+                        cube([entry_dim * sq_scale, entry_dim * sq_scale, 0.01], center=true);
                     }
                 }
             }
@@ -606,29 +608,36 @@ module ring_layout() {
 
         // Subtract cavities
         if (part == "all" || part == "body") {
+            arc_pitch = PI * (outer_diameter + inner_diameter) / (2 * num_leds);
             for (i = [0 : num_leds - 1]) {
                 angle = i * 360 / num_leds;
                 h = diffusion_height - bottom_thickness;
+                cavity_h = (part == "all") ? h + 0.1 : h + 0.2;
+                z_pos = (part == "all") ? (bottom_thickness + h/2 + 0.05) : (bottom_thickness + h/2);
                 delta = 2 * h * tan(draft_angle);
 
                 rotate([0, 0, angle])
-                translate([radius, 0, bottom_thickness + h/2])
+                translate([radius, 0, z_pos])
                 if (cell_shape == "circular") {
-                    exit_d = led_pitch - wall_thickness + tolerance;
+                    exit_d = min(led_pitch, min(ring_width, arc_pitch)) - wall_thickness + tolerance;
                     entry_d = max(1.0, exit_d - delta);
-                    cylinder(d1=exit_d, d2=entry_d, h=h + 0.1, center=true, $fn=64);
+                    cylinder(d1=exit_d, d2=entry_d, h=cavity_h, center=true, $fn=64);
+                } else if (cell_shape == "hexagonal") {
+                    exit_d = min(led_pitch, min(ring_width, arc_pitch)) - wall_thickness + tolerance;
+                    entry_d = max(1.0, exit_d - delta);
+                    cylinder(d1=exit_d, d2=entry_d, h=cavity_h, center=true, $fn=6);
                 } else {
                     // For square cells in a ring, we rotate them to align with the radius
                     // Width is radial, height is tangential (arc-like)
                     w_exit = ring_width - wall_thickness + tolerance;
-                    l_exit = (3.14159 * (outer_diameter+inner_diameter)/2 / num_leds) - wall_thickness + tolerance;
+                    l_exit = arc_pitch - wall_thickness + tolerance;
                     w_entry = max(1.0, w_exit - delta);
                     l_entry = max(1.0, l_exit - delta);
 
                     hull() {
-                        translate([0, 0, -h/2])
+                        translate([0, 0, -cavity_h/2])
                         cube([w_exit, l_exit, 0.01], center=true);
-                        translate([0, 0, h/2])
+                        translate([0, 0, cavity_h/2])
                         cube([w_entry, l_entry, 0.01], center=true);
                     }
                 }

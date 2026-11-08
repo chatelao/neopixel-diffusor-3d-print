@@ -77,7 +77,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
     - Update `y_min` and `y_max` in `hex_matrix_layout()` to use the true hex circumradius `hex_r = led_pitch / (2 * cos(30))` (`≈ 0.57735 * led_pitch`) instead of `0.5 * led_pitch`.
     - Slightly overlap adjacent hex cells (`d = (led_pitch + 0.002) / cos(30)`) or union them cleanly with the frame, and fill the staggered row side indentations so there are no `5mm` open holes between the rectangular frame and staggered hex rows and zero non-manifold edges.
 
-- [ ] **11. Fix Cross-Compatibility of `type` and `cell_shape` & Ring Constants (Flaw 1.6.4)**
+- [x] **11. Fix Cross-Compatibility of `type` and `cell_shape` & Ring Constants (Flaw 1.6.4)**
   - **File:** `src/diffuser.scad` (lines 119–131, 569–595)
   - **Action:**
     - When `type == "matrix"` and `cell_shape == "hexagonal"`, scale the hex cavity circumdiameter to `exit_dim` (so vertices fit within `led_pitch - wall_thickness`) instead of `exit_dim / cos(30)`.
