@@ -67,24 +67,27 @@ module cell() {
     delta = 2 * h * tan(draft_angle);
     entry_dim = max(1.0, exit_dim - delta); // Ensure it doesn't disappear
 
+    // Small overlap epsilon so adjacent cells in matrix/hex_matrix fuse into a 2-manifold solid
+    cell_outer_pitch = led_pitch + 0.02;
+
     difference() {
         union() {
             if (part == "all") {
                 // Outer boundary of the cell (full height)
                 if (type == "hex_matrix") {
                     rotate([0, 0, 30])
-                    cylinder(d=led_pitch / cos(30), h=diffusion_height, center=true, $fn=6);
+                    cylinder(d=cell_outer_pitch / cos(30), h=diffusion_height, center=true, $fn=6);
                 } else {
-                    cube([led_pitch, led_pitch, diffusion_height], center=true);
+                    cube([cell_outer_pitch, cell_outer_pitch, diffusion_height], center=true);
                 }
             } else if (part == "body") {
                 // Outer boundary of the cell above the recessed lid layer (z = bottom_thickness .. diffusion_height)
                 translate([0, 0, bottom_thickness/2])
                 if (type == "hex_matrix") {
                     rotate([0, 0, 30])
-                    cylinder(d=led_pitch / cos(30), h=h, center=true, $fn=6);
+                    cylinder(d=cell_outer_pitch / cos(30), h=h, center=true, $fn=6);
                 } else {
-                    cube([led_pitch, led_pitch, h], center=true);
+                    cube([cell_outer_pitch, cell_outer_pitch, h], center=true);
                 }
             }
             // "diffuser" part as individual cells is handled differently in layouts for Version 3 (single lid)
@@ -93,9 +96,9 @@ module cell() {
                 translate([0, 0, -diffusion_height/2 + bottom_thickness/2])
                 if (type == "hex_matrix") {
                     rotate([0, 0, 30])
-                    cylinder(d=led_pitch / cos(30), h=bottom_thickness, center=true, $fn=6);
+                    cylinder(d=cell_outer_pitch / cos(30), h=bottom_thickness, center=true, $fn=6);
                 } else {
-                    cube([led_pitch, led_pitch, bottom_thickness], center=true);
+                    cube([cell_outer_pitch, cell_outer_pitch, bottom_thickness], center=true);
                 }
             }
         }
@@ -142,28 +145,36 @@ module hex_matrix_layout() {
 
     // Hexagonal packing math (flat-to-flat = led_pitch):
     // Horizontal distance = led_pitch
-    // Vertical distance = led_pitch * cos(30) = led_pitch * 0.866
-    // Rows are staggered by led_pitch / 2
+    // Vertical distance = led_pitch * cos(30) = led_pitch * 0.8660254
+    // Circumradius (center to top/bottom vertex) = led_pitch / (2 * cos(30)) = 0.57735 * led_pitch
+    // Odd rows are staggered horizontally by led_pitch / 2
 
     row_dist = led_pitch * cos(30);
+    hex_r = led_pitch / (2 * cos(30));
+    has_odd_row = (actual_row_end > row_start) || (row_start % 2 == 1);
 
-    x_min = (col_start - 0.5) * led_pitch - frame_width;
-    x_max = (actual_col_end + 0.5) * led_pitch + (actual_row_end > 0 ? led_pitch/2 : 0) + frame_width;
-    y_min = (row_start - 0.5) * led_pitch - frame_width;
-    y_max = actual_row_end * row_dist + led_pitch/2 + frame_width;
+    inner_x_min = (col_start - 0.5) * led_pitch;
+    inner_x_max = (actual_col_end + 0.5) * led_pitch + (has_odd_row ? led_pitch/2 : 0);
+    inner_y_min = row_start * row_dist - hex_r;
+    inner_y_max = actual_row_end * row_dist + hex_r;
+
+    x_min = inner_x_min - frame_width;
+    x_max = inner_x_max + frame_width;
+    y_min = inner_y_min - frame_width;
+    y_max = inner_y_max + frame_width;
 
     // Interior bounds for the lid
-    lx_min = (col_start - 0.5) * led_pitch + lid_tolerance;
-    lx_max = (actual_col_end + 0.5) * led_pitch + (actual_row_end > 0 ? led_pitch/2 : 0) - lid_tolerance;
-    ly_min = (row_start - 0.5) * led_pitch + lid_tolerance;
-    ly_max = actual_row_end * row_dist + led_pitch/2 - lid_tolerance;
+    lx_min = inner_x_min + lid_tolerance;
+    lx_max = inner_x_max - lid_tolerance;
+    ly_min = inner_y_min + lid_tolerance;
+    ly_max = inner_y_max - lid_tolerance;
 
     difference() {
         union() {
             // Outer frame (enabled explicitly or required to retain V3 lid in "body" mode)
             if (has_frame && (part == "all" || part == "body")) {
                 if (frame_radius > 0) {
-                    // Rounded frame
+                    // Rounded outer frame
                     difference() {
                         hull() {
                             translate([x_min + frame_radius, y_min + frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
@@ -172,29 +183,45 @@ module hex_matrix_layout() {
                             translate([x_max - frame_radius, y_max - frame_radius, 0]) cylinder(r=frame_radius, h=diffusion_height, $fn=32);
                         }
                         // Subtract interior
-                        translate([x_min + frame_width, y_min + frame_width, -1])
-                        cube([x_max - x_min - 2*frame_width, y_max - y_min - 2*frame_width, diffusion_height + 2]);
+                        translate([inner_x_min, inner_y_min, -1])
+                        cube([inner_x_max - inner_x_min, inner_y_max - inner_y_min, diffusion_height + 2]);
                     }
                 } else {
                     // Left frame
                     if (col_start == 0) {
                         translate([x_min, y_min, 0])
-                        cube([frame_width, y_max - y_min, diffusion_height]);
+                        cube([frame_width + 0.01, y_max - y_min, diffusion_height]);
                     }
                     // Right frame
                     if (actual_col_end == cols - 1) {
-                        translate([x_max - frame_width, y_min, 0])
-                        cube([frame_width, y_max - y_min, diffusion_height]);
+                        translate([x_max - frame_width - 0.01, y_min, 0])
+                        cube([frame_width + 0.01, y_max - y_min, diffusion_height]);
                     }
                     // Bottom frame
                     if (row_start == 0) {
                         translate([x_min, y_min, 0])
-                        cube([x_max - x_min, frame_width, diffusion_height]);
+                        cube([x_max - x_min, frame_width + 0.01, diffusion_height]);
                     }
                     // Top frame
                     if (actual_row_end == rows - 1) {
-                        translate([x_min, y_max - frame_width, 0])
-                        cube([x_max - x_min, frame_width, diffusion_height]);
+                        translate([x_min, y_max - frame_width - 0.01, 0])
+                        cube([x_max - x_min, frame_width + 0.01, diffusion_height]);
+                    }
+                }
+
+                // Fill the staggered hex boundary gaps inside the frame above the lid recess
+                fill_z = (part == "body") ? bottom_thickness : 0;
+                fill_h = diffusion_height - fill_z;
+                difference() {
+                    translate([inner_x_min - 0.01, inner_y_min - 0.01, fill_z])
+                    cube([inner_x_max - inner_x_min + 0.02, inner_y_max - inner_y_min + 0.02, fill_h]);
+                    for (r = [row_start : actual_row_end]) {
+                        x_offset = (r % 2 == 0) ? 0 : led_pitch / 2;
+                        for (c = [col_start : actual_col_end]) {
+                            translate([c * led_pitch + x_offset, r * row_dist, fill_z + fill_h/2])
+                            rotate([0, 0, 30])
+                            cylinder(d=(led_pitch - 0.02) / cos(30), h=fill_h + 2, center=true, $fn=6);
+                        }
                     }
                 }
             }

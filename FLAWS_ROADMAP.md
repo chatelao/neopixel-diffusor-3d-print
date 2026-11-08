@@ -71,7 +71,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
     - In `ring_layout()`, position mounting tabs, holes, and magnet pockets radially outward at `actual_outer / 2 + tab_offset` (e.g., `actual_outer / 2 + max(mounting_hole_dia, magnets_enabled ? magnet_dia/2 : 0)`) so neither holes nor `6.1mm` magnet pockets intersect the ring's LED cavities.
     - In `matrix_layout()` and `hex_matrix_layout()`, offset corner tab centers outward from the cell boundary or increase corner tab bosses so `magnet_dia` (`6.1mm`) never cuts into corner LED cells.
 
-- [ ] **10. Fix Hex-Matrix Bounding Box, Frame Fit, and Manifold Overlap (Flaw 1.6)**
+- [x] **10. Fix Hex-Matrix Bounding Box, Frame Fit, and Manifold Overlap (Flaw 1.6)**
   - **File:** `src/diffuser.scad` (lines 74–88, 121–123, 157–209)
   - **Action:**
     - Update `y_min` and `y_max` in `hex_matrix_layout()` to use the true hex circumradius `hex_r = led_pitch / (2 * cos(30))` (`≈ 0.57735 * led_pitch`) instead of `0.5 * led_pitch`.
