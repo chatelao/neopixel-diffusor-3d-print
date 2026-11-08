@@ -37,7 +37,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
 ## Phase 2: Fix Version 3 (`body` & `diffuser` Lid) Architecture in `src/diffuser.scad`
 *Goal: Make Version 3 bodies self-supporting on the print bed (`z = 0`) with a proper retaining lip/recess, and ensure Version 3 lids are clean, accurately sized single-piece sheets.*
 
-- [ ] **5. Guard Auxiliary Features Against Bleeding into `part == "diffuser"` (Flaw 1.4.2)**
+- [x] **5. Guard Auxiliary Features Against Bleeding into `part == "diffuser"` (Flaw 1.4.2)**
   - **File:** `src/diffuser.scad` (lines 211–231, 265–331, 391–411, 436–501, 538–565)
   - **Action:**
     - Wrap mounting tabs, mounting holes, magnet recesses, cable cutouts, and frame labels in `if (part == "all" || part == "body")` across `matrix_layout()`, `hex_matrix_layout()`, and `ring_layout()`.
