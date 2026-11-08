@@ -102,7 +102,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
 ## Phase 4: Improve Python Scripts & Mesh Verification (`scripts/`)
 *Goal: Enforce strict mesh verification (single-shell manifold check), validate configuration parameters, and speed up asset generation.*
 
-- [ ] **14. Fix `scripts/verify_stls.py` to Catch Multi-Shell Disconnections and Non-Manifold Edges (Flaw 2.1)**
+- [x] **14. Fix `scripts/verify_stls.py` to Catch Multi-Shell Disconnections and Non-Manifold Edges (Flaw 2.1)**
   - **File:** `scripts/verify_stls.py` (lines 5–28)
   - **Action:**
     - Include `is_manifold` in the pass condition.
