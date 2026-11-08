@@ -122,13 +122,13 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
 ## Phase 5: Align Web Viewer, CI/CD, Repository Assets & Documentation
 *Goal: Synchronize generated filenames across scripts, docs, and GitHub Pages, fix the 3D viewer clipping bug, and clean up repository artifacts.*
 
-- [ ] **16. Synchronize Asset Filenames Across `generate_stl.py`, `docs/index.html`, and `README.md` (Flaw 3.1)**
+- [x] **16. Synchronize Asset Filenames Across `generate_stl.py`, `docs/index.html`, and `README.md` (Flaw 3.1)**
   - **Files:** `scripts/generate_stl.py`, `docs/index.html`, `README.md`, `.github/workflows/generate_stls.yml`
   - **Action:**
     - Update `docs/index.html` and `README.md` to reference the versioned filenames (`_v1.stl` / `_v1.png`, or provide a version/panel selector in `docs/index.html`).
     - Remove stale unsuffixed or orphaned files (`stl/diffuser_hex_sample_body.stl`, `stl/diffuser_hex_sample_diffuser.stl`, etc.) and regenerate all configured panels (`16x16`, `8x32`, `ring_20`, `hex_sample`, `16x32`, `16x16_segmented`, `ring_20_magnets`, `hex_full_features`) across V1, V2, V3 body, and V3 lid.
 
-- [ ] **17. Fix Camera Far-Plane Clipping, GitHub Link, and Model Selector in `docs/index.html` (Flaws 3.2 & 3.3)**
+- [x] **17. Fix Camera Far-Plane Clipping, GitHub Link, and Model Selector in `docs/index.html` (Flaws 3.2 & 3.3)**
   - **File:** `docs/index.html` (lines 72–175)
   - **Action:**
     - Increase `PerspectiveCamera` `far` plane from `1000` to `5000` (or dynamically set `camera.far = cameraZ * 5; camera.updateProjectionMatrix();`) so large panels like `8x32` and `16x32` are never clipped on initial load.
