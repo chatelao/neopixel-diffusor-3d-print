@@ -20,7 +20,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
     - Move the ring capacitor cutout Z-center from `cap_clearance_height/2` to `diffusion_height - cap_clearance_height/2 + 0.05`.
     - Constrain the radial width of the capacitor cutout to `ring_width - 2 * wall_thickness` so it only notches the inter-LED dividing walls on the PCB side without piercing the inner or outer perimeter walls of the ring.
 
-- [ ] **3. Move Cable Cutouts and Magnet Recesses to the PCB Side (Flaw 1.3)**
+- [x] **3. Move Cable Cutouts and Magnet Recesses to the PCB Side (Flaw 1.3)**
   - **File:** `src/diffuser.scad` (lines 294–331, 465–501, 548–565)
   - **Action:**
     - Update magnet recess Z-translations across `matrix_layout()`, `hex_matrix_layout()`, and `ring_layout()` from `z = -0.1` to `z = diffusion_height - magnet_depth`.

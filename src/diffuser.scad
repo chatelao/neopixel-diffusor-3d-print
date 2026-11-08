@@ -291,41 +291,41 @@ module hex_matrix_layout() {
             text(label_text, size = label_size, halign = "center", valign = "center");
         }
 
-        // Magnet recesses
+        // Magnet recesses (on the PCB side at +Z)
         if (magnets_enabled && mounting_holes_enabled && frame_enabled) {
             // Corners
             if (col_start == 0 && row_start == 0) {
-                translate([x_min, y_min, -0.1])
+                translate([x_min, y_min, diffusion_height - magnet_depth])
                 cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
             }
             if (actual_col_end == cols - 1 && row_start == 0) {
-                translate([x_max, y_min, -0.1])
+                translate([x_max, y_min, diffusion_height - magnet_depth])
                 cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
             }
             if (col_start == 0 && actual_row_end == rows - 1) {
-                translate([x_min, y_max, -0.1])
+                translate([x_min, y_max, diffusion_height - magnet_depth])
                 cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
             }
             if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
-                translate([x_max, y_max, -0.1])
+                translate([x_max, y_max, diffusion_height - magnet_depth])
                 cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
             }
         }
 
 
-        // Cable cutout
+        // Cable cutout (on the PCB side at +Z)
         if (cutout_enabled) {
             if (cutout_side == "bottom" && row_start == 0) {
-                translate([(x_max+x_min)/2, y_min + frame_width/2, cutout_depth/2 - 0.1])
+                translate([(x_max+x_min)/2, y_min + frame_width/2, diffusion_height - cutout_depth/2 + 0.1])
                 cube([cutout_width, frame_width + 2, cutout_depth + 0.2], center=true);
             } else if (cutout_side == "top" && actual_row_end == rows - 1) {
-                translate([(x_max+x_min)/2, y_max - frame_width/2, cutout_depth/2 - 0.1])
+                translate([(x_max+x_min)/2, y_max - frame_width/2, diffusion_height - cutout_depth/2 + 0.1])
                 cube([cutout_width, frame_width + 2, cutout_depth + 0.2], center=true);
             } else if (cutout_side == "left" && col_start == 0) {
-                translate([x_min + frame_width/2, (y_max+y_min)/2, cutout_depth/2 - 0.1])
+                translate([x_min + frame_width/2, (y_max+y_min)/2, diffusion_height - cutout_depth/2 + 0.1])
                 cube([frame_width + 2, cutout_width, cutout_depth + 0.2], center=true);
             } else if (cutout_side == "right" && actual_col_end == cols - 1) {
-                translate([x_max - frame_width/2, (y_max+y_min)/2, cutout_depth/2 - 0.1])
+                translate([x_max - frame_width/2, (y_max+y_min)/2, diffusion_height - cutout_depth/2 + 0.1])
                 cube([frame_width + 2, cutout_width, cutout_depth + 0.2], center=true);
             }
         }
@@ -462,40 +462,40 @@ module matrix_layout() {
             text(label_text, size = label_size, halign = "center", valign = "center");
         }
 
-        // Magnet recesses
+        // Magnet recesses (on the PCB side at +Z)
         if (magnets_enabled && mounting_holes_enabled && frame_enabled) {
             // Corners
             if (col_start == 0 && row_start == 0) {
-                translate([x_min, y_min, -0.1])
+                translate([x_min, y_min, diffusion_height - magnet_depth])
                 cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
             }
             if (actual_col_end == cols - 1 && row_start == 0) {
-                translate([x_max, y_min, -0.1])
+                translate([x_max, y_min, diffusion_height - magnet_depth])
                 cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
             }
             if (col_start == 0 && actual_row_end == rows - 1) {
-                translate([x_min, y_max, -0.1])
+                translate([x_min, y_max, diffusion_height - magnet_depth])
                 cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
             }
             if (actual_col_end == cols - 1 && actual_row_end == rows - 1) {
-                translate([x_max, y_max, -0.1])
+                translate([x_max, y_max, diffusion_height - magnet_depth])
                 cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
             }
         }
 
-        // Cable cutout
+        // Cable cutout (on the PCB side at +Z)
         if (cutout_enabled) {
             if (cutout_side == "bottom" && row_start == 0) {
-                translate([(x_max+x_min)/2, y_min + frame_width/2, cutout_depth/2 - 0.1])
+                translate([(x_max+x_min)/2, y_min + frame_width/2, diffusion_height - cutout_depth/2 + 0.1])
                 cube([cutout_width, frame_width + 2, cutout_depth + 0.2], center=true);
             } else if (cutout_side == "top" && actual_row_end == rows - 1) {
-                translate([(x_max+x_min)/2, y_max - frame_width/2, cutout_depth/2 - 0.1])
+                translate([(x_max+x_min)/2, y_max - frame_width/2, diffusion_height - cutout_depth/2 + 0.1])
                 cube([cutout_width, frame_width + 2, cutout_depth + 0.2], center=true);
             } else if (cutout_side == "left" && col_start == 0) {
-                translate([x_min + frame_width/2, (y_max+y_min)/2, cutout_depth/2 - 0.1])
+                translate([x_min + frame_width/2, (y_max+y_min)/2, diffusion_height - cutout_depth/2 + 0.1])
                 cube([frame_width + 2, cutout_width, cutout_depth + 0.2], center=true);
             } else if (cutout_side == "right" && actual_col_end == cols - 1) {
-                translate([x_max - frame_width/2, (y_max+y_min)/2, cutout_depth/2 - 0.1])
+                translate([x_max - frame_width/2, (y_max+y_min)/2, diffusion_height - cutout_depth/2 + 0.1])
                 cube([frame_width + 2, cutout_width, cutout_depth + 0.2], center=true);
             }
         }
@@ -544,23 +544,23 @@ module ring_layout() {
             }
         }
 
-        // Magnet recesses for ring
+        // Magnet recesses for ring (on the PCB side at +Z)
         if (magnets_enabled && mounting_holes_enabled) {
             for (a = [0, 90, 180, 270]) {
                 rotate([0, 0, a])
-                translate([actual_outer/2, 0, -0.1])
+                translate([actual_outer/2, 0, diffusion_height - magnet_depth])
                 cylinder(d=magnet_dia, h=magnet_depth + 0.1, $fn=32);
             }
         }
 
-        // Cable cutout
+        // Cable cutout (on the PCB side at +Z)
         if (cutout_enabled) {
             if (cutout_side == "inner") {
-                translate([inner_diameter/2, 0, cutout_depth/2 - 0.1])
-                cube([frame_width + 5, cutout_width, cutout_depth + 0.2], center=true);
+                translate([inner_diameter/2, 0, diffusion_height - cutout_depth/2 + 0.1])
+                cube([wall_thickness * 2 + 1, cutout_width, cutout_depth + 0.2], center=true);
             } else if (cutout_side == "outer") {
-                translate([actual_outer/2, 0, cutout_depth/2 - 0.1])
-                cube([frame_width + 5, cutout_width, cutout_depth + 0.2], center=true);
+                translate([actual_outer/2, 0, diffusion_height - cutout_depth/2 + 0.1])
+                cube([(frame_enabled ? frame_width : wall_thickness) * 2 + 1, cutout_width, cutout_depth + 0.2], center=true);
             }
         }
 
