@@ -55,7 +55,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
   - **Action:**
     - Remove the outer `translate([(lx_min+lx_max)/2, (ly_min+ly_max)/2, ...])` when using world coordinates `[lx_min + r, ly_min + r, 0]` inside the `if (frame_radius > 0)` hull, and offset cylinder centers by the actual corner radius `r = max(0.1, frame_radius - frame_width - lid_tolerance)`.
 
-- [ ] **8. Fix V3 Hex-Matrix Lid Geometry for Staggered Rows (Flaw 1.4.4)**
+- [x] **8. Fix V3 Hex-Matrix Lid Geometry for Staggered Rows (Flaw 1.4.4)**
   - **File:** `src/diffuser.scad` (lines 241–262)
   - **Action:**
     - Generate the `hex_matrix` lid as the union of all cells at `h = bottom_thickness` inset by `lid_tolerance` (or hull per row/column including odd-row `x_offset = led_pitch / 2`), ensuring complete coverage of staggered odd rows and exact fit into the `body` recess.

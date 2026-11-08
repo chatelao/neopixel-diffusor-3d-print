@@ -230,25 +230,19 @@ module hex_matrix_layout() {
                     }
                 }
             } else if (part == "diffuser") {
-                // Render the one-piece lid for the hex matrix
-                // For simplicity we use the hull of the actual cells as the lid shape
-                translate([0, 0, bottom_thickness/2])
-                intersection() {
-                    // Overall bounds
-                    translate([(lx_min+lx_max)/2, (ly_min+ly_max)/2, 0])
-                    cube([lx_max-lx_min, ly_max-ly_min, bottom_thickness], center=true);
-
-                    // Refine with hull of the hexagons (approximate with a hull of the corners)
+                // One-piece solid lid for the hex matrix (covering all staggered rows inside the frame recess)
+                if (frame_radius > 0) {
+                    lid_r = max(0.1, frame_radius - frame_width - lid_tolerance);
+                    translate([0, 0, bottom_thickness/2])
                     hull() {
-                        for (r = [row_start, actual_row_end]) {
-                            x_offset = (r % 2 == 0) ? 0 : led_pitch / 2;
-                            for (c = [col_start, actual_col_end]) {
-                                translate([c * led_pitch + x_offset, r * row_dist, 0])
-                                rotate([0, 0, 30])
-                                cylinder(d=(led_pitch - 2*lid_tolerance) / cos(30), h=bottom_thickness, center=true, $fn=6);
-                            }
-                        }
+                        translate([lx_min + lid_r, ly_min + lid_r, 0]) cylinder(r=lid_r, h=bottom_thickness, center=true, $fn=32);
+                        translate([lx_max - lid_r, ly_min + lid_r, 0]) cylinder(r=lid_r, h=bottom_thickness, center=true, $fn=32);
+                        translate([lx_min + lid_r, ly_max - lid_r, 0]) cylinder(r=lid_r, h=bottom_thickness, center=true, $fn=32);
+                        translate([lx_max - lid_r, ly_max - lid_r, 0]) cylinder(r=lid_r, h=bottom_thickness, center=true, $fn=32);
                     }
+                } else {
+                    translate([(lx_min+lx_max)/2, (ly_min+ly_max)/2, bottom_thickness/2])
+                    cube([lx_max-lx_min, ly_max-ly_min, bottom_thickness], center=true);
                 }
             }
         }
