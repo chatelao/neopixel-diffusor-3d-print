@@ -283,12 +283,14 @@ module hex_matrix_layout() {
             }
         }
 
-        // Frame Labeling
-        if (label_text != "" && frame_enabled) {
-            // Place on bottom frame by default
-            translate([(x_max+x_min)/2, y_min + frame_width/2, diffusion_height - label_depth])
-            linear_extrude(height = label_depth + 0.1)
-            text(label_text, size = label_size, halign = "center", valign = "center");
+        // Frame Labeling (embossed on the outer vertical wall of the bottom frame)
+        if (label_text != "" && frame_enabled && (row_start == 0 || frame_radius > 0)) {
+            actual_label_size = min(label_size, diffusion_height * 0.6);
+            actual_label_depth = min(label_depth, frame_width * 0.5);
+            translate([(x_max+x_min)/2, y_min + actual_label_depth, diffusion_height/2])
+            rotate([90, 0, 0])
+            linear_extrude(height = actual_label_depth + 0.1)
+            text(label_text, size = actual_label_size, halign = "center", valign = "center");
         }
 
         // Magnet recesses (on the PCB side at +Z)
@@ -454,12 +456,14 @@ module matrix_layout() {
             }
         }
 
-        // Frame Labeling
-        if (label_text != "" && frame_enabled) {
-            // Place on bottom frame by default
-            translate([(x_max+x_min)/2, y_min + frame_width/2, diffusion_height - label_depth])
-            linear_extrude(height = label_depth + 0.1)
-            text(label_text, size = label_size, halign = "center", valign = "center");
+        // Frame Labeling (embossed on the outer vertical wall of the bottom frame)
+        if (label_text != "" && frame_enabled && (row_start == 0 || frame_radius > 0)) {
+            actual_label_size = min(label_size, diffusion_height * 0.6);
+            actual_label_depth = min(label_depth, frame_width * 0.5);
+            translate([(x_max+x_min)/2, y_min + actual_label_depth, diffusion_height/2])
+            rotate([90, 0, 0])
+            linear_extrude(height = actual_label_depth + 0.1)
+            text(label_text, size = actual_label_size, halign = "center", valign = "center");
         }
 
         // Magnet recesses (on the PCB side at +Z)

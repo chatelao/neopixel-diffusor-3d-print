@@ -26,7 +26,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
     - Update magnet recess Z-translations across `matrix_layout()`, `hex_matrix_layout()`, and `ring_layout()` from `z = -0.1` to `z = diffusion_height - magnet_depth`.
     - Update cable cutout Z-translations across all three layouts from `z = cutout_depth/2 - 0.1` to `z = diffusion_height - cutout_depth/2 + 0.1`.
 
-- [ ] **4. Fix Frame Labeling Placement, Orientation, and Sizing (Flaw 1.3)**
+- [x] **4. Fix Frame Labeling Placement, Orientation, and Sizing (Flaw 1.3)**
   - **File:** `src/diffuser.scad` (lines 36–38, 287–292, 458–463)
   - **Action:**
     - Clamp or default `label_size` to fit within `frame_width` (e.g., `min(label_size, frame_width * 0.75)`), or place the label on the outer vertical side wall of the frame (`y = y_min`) so `5mm` text fits within the `10mm` `diffusion_height` without cutting into LED cavities.
