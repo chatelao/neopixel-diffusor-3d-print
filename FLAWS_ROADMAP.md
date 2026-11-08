@@ -50,7 +50,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
     - In `ring_layout()`, recess the lid pocket between `inner_diameter + 2 * wall_thickness` and `outer_diameter - 2 * wall_thickness` (or use `actual_outer` / inner lip) so the ring body rests flat at `z = 0` and retains the lid.
     - Match the lid (`part == "diffuser"`) dimensions to the recessed pocket minus `lid_tolerance`.
 
-- [ ] **7. Fix V3 Matrix Lid Double-Translation When `frame_radius > 0` (Flaw 1.4.3)**
+- [x] **7. Fix V3 Matrix Lid Double-Translation When `frame_radius > 0` (Flaw 1.4.3)**
   - **File:** `src/diffuser.scad` (lines 421–433)
   - **Action:**
     - Remove the outer `translate([(lx_min+lx_max)/2, (ly_min+ly_max)/2, ...])` when using world coordinates `[lx_min + r, ly_min + r, 0]` inside the `if (frame_radius > 0)` hull, and offset cylinder centers by the actual corner radius `r = max(0.1, frame_radius - frame_width - lid_tolerance)`.

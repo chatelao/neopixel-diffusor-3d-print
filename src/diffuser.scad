@@ -414,15 +414,17 @@ module matrix_layout() {
                 }
             } else if (part == "diffuser") {
                 // One piece solid lid for version 3
-                translate([(lx_min+lx_max)/2, (ly_min+ly_max)/2, bottom_thickness/2])
                 if (frame_radius > 0) {
+                    lid_r = max(0.1, frame_radius - frame_width - lid_tolerance);
+                    translate([0, 0, bottom_thickness/2])
                     hull() {
-                        translate([lx_min+frame_radius, ly_min+frame_radius, 0]) cylinder(r=max(0.1, frame_radius - frame_width - lid_tolerance), h=bottom_thickness, center=true, $fn=32);
-                        translate([lx_max-frame_radius, ly_min+frame_radius, 0]) cylinder(r=max(0.1, frame_radius - frame_width - lid_tolerance), h=bottom_thickness, center=true, $fn=32);
-                        translate([lx_min+frame_radius, ly_max-frame_radius, 0]) cylinder(r=max(0.1, frame_radius - frame_width - lid_tolerance), h=bottom_thickness, center=true, $fn=32);
-                        translate([lx_max-frame_radius, ly_max-frame_radius, 0]) cylinder(r=max(0.1, frame_radius - frame_width - lid_tolerance), h=bottom_thickness, center=true, $fn=32);
+                        translate([lx_min + lid_r, ly_min + lid_r, 0]) cylinder(r=lid_r, h=bottom_thickness, center=true, $fn=32);
+                        translate([lx_max - lid_r, ly_min + lid_r, 0]) cylinder(r=lid_r, h=bottom_thickness, center=true, $fn=32);
+                        translate([lx_min + lid_r, ly_max - lid_r, 0]) cylinder(r=lid_r, h=bottom_thickness, center=true, $fn=32);
+                        translate([lx_max - lid_r, ly_max - lid_r, 0]) cylinder(r=lid_r, h=bottom_thickness, center=true, $fn=32);
                     }
                 } else {
+                    translate([(lx_min+lx_max)/2, (ly_min+ly_max)/2, bottom_thickness/2])
                     cube([lx_max-lx_min, ly_max-ly_min, bottom_thickness], center=true);
                 }
             }
