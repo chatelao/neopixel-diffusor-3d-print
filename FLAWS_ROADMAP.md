@@ -109,7 +109,7 @@ This roadmap provides a structured, step-by-step action plan to resolve every ge
     - Parse `Number of parts` from `admesh` output and assert `parts == 1` so shattered meshes (e.g., 257 disconnected parts) fail verification.
     - Add a pure-Python fallback/check verifying `0` non-manifold edges (every triangle edge shared by exactly 2 triangles), `1` connected component, and `min(z) == 0.0` (model rests on the build plate).
 
-- [ ] **15. Strengthen Config Validation, Path Resolution, and Rendering Performance in `scripts/generate_stl.py` (Flaw 2.2)**
+- [x] **15. Strengthen Config Validation, Path Resolution, and Rendering Performance in `scripts/generate_stl.py` (Flaw 2.2)**
   - **File:** `scripts/generate_stl.py` (lines 7–140)
   - **Action:**
     - Resolve `CONFIG_FILE`, `src/diffuser.scad`, `stl/`, and `images/` paths relative to the repository root (`Path(__file__).resolve().parent.parent`) so the script works from any working directory.
