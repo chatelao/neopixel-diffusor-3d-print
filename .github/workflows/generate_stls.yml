@@ -2,10 +2,14 @@ name: Generate STLs and Deploy Docs
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'fix/**' ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -21,7 +25,7 @@ jobs:
     - name: Install OpenSCAD and dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install openscad xvfb -y
+        sudo apt-get install openscad xvfb admesh -y
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -30,19 +34,26 @@ jobs:
 
     - name: Generate STLs and Renderings
       run: |
+        rm -rf stl/*.stl docs/stl/*.stl
         mkdir -p stl images
         python3 scripts/generate_stl.py
+
+    - name: Verify STLs
+      run: |
+        python3 scripts/verify_stls.py
 
     - name: Sync STLs to docs
       run: |
         mkdir -p docs/stl
         cp stl/*.stl docs/stl/
 
-    - name: Upload STLs as artifact
+    - name: Upload STLs and Images as artifact
       uses: actions/upload-artifact@v4
       with:
         name: stl-files
-        path: stl/*.stl
+        path: |
+          stl/*.stl
+          images/*.png
 
     - name: Upload Pages artifact
       if: github.ref == 'refs/heads/main'

@@ -16,10 +16,31 @@
         }
         header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
         }
         h1 {
             color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .controls-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .controls-bar label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .controls-bar select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background: #fff;
+            font-size: 0.95rem;
+            cursor: pointer;
         }
         .grid {
             display: grid;
@@ -46,7 +67,13 @@
         }
         .info h2 {
             margin-top: 0;
+            margin-bottom: 6px;
             font-size: 1.25rem;
+        }
+        .info p {
+            margin: 0;
+            color: #555;
+            font-size: 0.92rem;
         }
         footer {
             text-align: center;
@@ -59,6 +86,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            pointer-events: none;
         }
     </style>
 </head>
@@ -66,12 +94,22 @@
 
 <header>
     <h1>NeoPixel Diffuser Generator</h1>
-    <p>3D-printable attachments for various NeoPixel panels.</p>
+    <p>3D-printable parametric attachments for NeoPixel panels and rings.</p>
 </header>
+
+<div class="controls-bar">
+    <label for="version-select">Diffuser Version:</label>
+    <select id="version-select">
+        <option value="v1">Version 1 — Standard All-in-One (0.4mm diffuser layer)</option>
+        <option value="v2">Version 2 — Thick All-in-One (0.7mm diffuser layer)</option>
+        <option value="v3_body">Version 3 — Separate Grid Body (recessed for lid)</option>
+        <option value="v3_lid">Version 3 — Separate Diffuser Lid (1.0mm sheet)</option>
+    </select>
+</div>
 
 <div class="grid">
     <div class="card">
-        <div id="viewer-16x16" class="viewer" data-model="stl/diffuser_16x16.stl">
+        <div id="viewer-16x16" class="viewer" data-panel="16x16" data-model="stl/diffuser_16x16_v1.stl">
             <div class="loading">Loading 16x16...</div>
         </div>
         <div class="info">
@@ -81,7 +119,7 @@
     </div>
 
     <div class="card">
-        <div id="viewer-8x32" class="viewer" data-model="stl/diffuser_8x32.stl">
+        <div id="viewer-8x32" class="viewer" data-panel="8x32" data-model="stl/diffuser_8x32_v1.stl">
             <div class="loading">Loading 8x32...</div>
         </div>
         <div class="info">
@@ -91,18 +129,48 @@
     </div>
 
     <div class="card">
-        <div id="viewer-ring" class="viewer" data-model="stl/diffuser_ring_20.stl">
+        <div id="viewer-ring" class="viewer" data-panel="ring_20" data-model="stl/diffuser_ring_20_v1.stl">
             <div class="loading">Loading Ring...</div>
         </div>
         <div class="info">
             <h2>20-LED Ring</h2>
-            <p>Diffuser for 20-LED NeoPixel rings (62mm OD).</p>
+            <p>Diffuser for 20-LED NeoPixel rings (62mm OD, 47mm ID).</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div id="viewer-hex-sample" class="viewer" data-panel="hex_sample" data-model="stl/diffuser_hex_sample_v1.stl">
+            <div class="loading">Loading Hex Sample...</div>
+        </div>
+        <div class="info">
+            <h2>5x5 Hex Matrix</h2>
+            <p>Staggered hexagonal cell layout (5x5 LEDs, 10mm pitch).</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div id="viewer-hex-full" class="viewer" data-panel="hex_full_features" data-model="stl/diffuser_hex_full_features_v1.stl">
+            <div class="loading">Loading Hex 8x8...</div>
+        </div>
+        <div class="info">
+            <h2>8x8 Hex Matrix (Full Features)</h2>
+            <p>Rounded frame, corner mounting tabs, magnet recesses, and frame label.</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div id="viewer-ring-magnets" class="viewer" data-panel="ring_20_magnets" data-model="stl/diffuser_ring_20_magnets_v1.stl">
+            <div class="loading">Loading Ring (Magnets)...</div>
+        </div>
+        <div class="info">
+            <h2>20-LED Ring (Magnet Mounts)</h2>
+            <p>20-LED ring diffuser with neodymium magnet pockets in mounting tabs.</p>
         </div>
     </div>
 </div>
 
 <footer>
-    <p>Generated with OpenSCAD & Python. <a href="https://github.com/jules-software-engineer/neopixel-diffuser">View on GitHub</a></p>
+    <p>Generated with OpenSCAD &amp; Python. <a href="https://github.com/chatelao/neopixel-diffusor-3d-print">View on GitHub</a></p>
 </footer>
 
 <script type="importmap">
@@ -119,15 +187,16 @@
     import { STLLoader } from 'three/addons/loaders/STLLoader.js';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-    function initViewer(containerId) {
-        const container = document.getElementById(containerId);
-        const modelPath = container.getAttribute('data-model');
+    const loader = new STLLoader();
+    const viewers = [];
+
+    function initViewer(container) {
         const loadingMsg = container.querySelector('.loading');
 
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0xeeeeee);
 
-        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 5000);
         camera.position.set(100, 100, 100);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -140,42 +209,57 @@
         const ambientLight = new THREE.AmbientLight(0x404040);
         scene.add(ambientLight);
 
-        const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.5);
+        const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.6);
         directionalLight1.position.set(1, 1, 1);
         scene.add(directionalLight1);
 
-        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.2);
+        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.3);
         directionalLight2.position.set(-1, -1, 1);
         scene.add(directionalLight2);
 
-        const loader = new STLLoader();
-        loader.load(modelPath, function (geometry) {
-            const material = new THREE.MeshPhongMaterial({ color: 0x00aaff, specular: 0x111111, shininess: 200 });
-            const mesh = new THREE.Mesh(geometry, material);
+        let currentMesh = null;
 
-            geometry.computeBoundingBox();
-            const center = new THREE.Vector3();
-            geometry.boundingBox.getCenter(center);
-            mesh.position.sub(center);
+        function loadModel(modelPath) {
+            if (loadingMsg) {
+                loadingMsg.style.display = 'block';
+                loadingMsg.innerText = 'Loading model...';
+            }
+            loader.load(modelPath, function (geometry) {
+                if (currentMesh) {
+                    scene.remove(currentMesh);
+                    currentMesh.geometry.dispose();
+                }
+                const material = new THREE.MeshPhongMaterial({ color: 0x00aaff, specular: 0x111111, shininess: 200 });
+                const mesh = new THREE.Mesh(geometry, material);
 
-            scene.add(mesh);
+                geometry.computeBoundingBox();
+                const center = new THREE.Vector3();
+                geometry.boundingBox.getCenter(center);
+                mesh.position.sub(center);
 
-            // Adjust camera to fit model
-            const size = new THREE.Vector3();
-            geometry.boundingBox.getSize(size);
-            const maxDim = Math.max(size.x, size.y, size.z);
-            const fov = camera.fov * (Math.PI / 180);
-            let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2));
-            cameraZ *= 1.5; // Zoom out a bit
-            camera.position.set(cameraZ, cameraZ, cameraZ);
-            camera.lookAt(0, 0, 0);
-            controls.update();
+                scene.add(mesh);
+                currentMesh = mesh;
 
-            if (loadingMsg) loadingMsg.style.display = 'none';
-        }, undefined, function (error) {
-            console.error(error);
-            if (loadingMsg) loadingMsg.innerText = 'Error loading model';
-        });
+                // Adjust camera to fit model without far-plane clipping
+                const size = new THREE.Vector3();
+                geometry.boundingBox.getSize(size);
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const fov = camera.fov * (Math.PI / 180);
+                let cameraZ = Math.abs(maxDim / 2 / Math.tan(fov / 2)) * 1.5;
+                camera.far = Math.max(5000, cameraZ * 6);
+                camera.updateProjectionMatrix();
+                camera.position.set(cameraZ, cameraZ, cameraZ);
+                camera.lookAt(0, 0, 0);
+                controls.update();
+
+                if (loadingMsg) loadingMsg.style.display = 'none';
+            }, undefined, function (error) {
+                console.error(error);
+                if (loadingMsg) loadingMsg.innerText = 'Error loading model';
+            });
+        }
+
+        loadModel(container.getAttribute('data-model'));
 
         function animate() {
             requestAnimationFrame(animate);
@@ -190,11 +274,24 @@
             camera.updateProjectionMatrix();
             renderer.setSize(container.clientWidth, container.clientHeight);
         });
+
+        return { container, loadModel };
     }
 
-    initViewer('viewer-16x16');
-    initViewer('viewer-8x32');
-    initViewer('viewer-ring');
+    document.querySelectorAll('.viewer').forEach((el) => {
+        viewers.push(initViewer(el));
+    });
+
+    const versionSelect = document.getElementById('version-select');
+    versionSelect.addEventListener('change', (e) => {
+        const ver = e.target.value;
+        viewers.forEach(({ container, loadModel }) => {
+            const panel = container.getAttribute('data-panel');
+            const newPath = `stl/diffuser_${panel}_${ver}.stl`;
+            container.setAttribute('data-model', newPath);
+            loadModel(newPath);
+        });
+    });
 </script>
 
 </body>
